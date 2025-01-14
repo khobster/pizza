@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caro's Pizza - Huger, SC</title>
+    <style>
+        :root {
+            --primary-red: #E31837;
+            --dark-red: #C41230;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            line-height: 1.6;
+        }
+
+        .header {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            max-width: 200px;
+            margin: 0 auto 1rem;
+        }
+
+        .phone {
+            color: var(--primary-red);
+            font-size: 2rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .location {
+            font-size: 1.2rem;
+            color: #333;
+            margin-top: 0.5rem;
+        }
+
+        .order-button {
+            display: inline-block;
+            background: var(--primary-red);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 1rem;
+            cursor: pointer;
+            border: none;
+            font-size: 1.1rem;
+            transition: background 0.3s;
+        }
+
+        .order-button:hover {
+            background: var(--dark-red);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 500px;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: 5px;
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .hours {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .hours h2 {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background: #f5f5f5;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 600px) {
+            .phone {
+                font-size: 1.5rem;
+            }
+
+            .modal-content {
+                margin: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <img src="/api/placeholder/200/200" alt="Caro's Pizza" class="logo">
+        <a href="tel:5052264632" class="phone">(505) 226-4632</a>
+        <div class="location">HUGER, SC</div>
+        <button class="order-button" onclick="openOrderModal()">ORDER NOW</button>
+    </header>
+
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeOrderModal()">&times;</span>
+            <h2>Place Your Order</h2>
+            <form id="orderForm">
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone:</label>
+                    <input type="tel" id="phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="pickupTime">Pickup Time:</label>
+                    <input type="time" id="pickupTime" required>
+                </div>
+                <div class="form-group">
+                    <label for="order">Order Details:</label>
+                    <textarea id="order" rows="4" required></textarea>
+                </div>
+                <button type="submit" class="order-button">Submit Order</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="hours">
+        <h2>Hours</h2>
+        <p>Monday - Thursday: 11:00 AM - 9:00 PM</p>
+        <p>Friday - Saturday: 11:00 AM - 10:00 PM</p>
+        <p>Sunday: 12:00 PM - 8:00 PM</p>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Caro's Pizza. All rights reserved.</p>
+    </footer>
+
+    <script>
+        function openOrderModal() {
+            document.getElementById('orderModal').style.display = 'block';
+        }
+
+        function closeOrderModal() {
+            document.getElementById('orderModal').style.display = 'none';
+        }
+
+        document.getElementById('orderForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Here we'll add Stripe payment integration
+            const orderDetails = {
+                name: document.getElementById('name').value,
+                phone: document.getElementById('phone').value,
+                pickupTime: document.getElementById('pickupTime').value,
+                order: document.getElementById('order').value
+            };
+            console.log('Order submitted:', orderDetails);
+            // We'll add email notification here
+            closeOrderModal();
+            alert('Thank you for your order! We\'ll confirm it shortly.');
+        });
+
+        // Close modal if clicking outside
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('orderModal')) {
+                closeOrderModal();
+            }
+        }
+    </script>
+</body>
+</html>
