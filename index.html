@@ -19,14 +19,23 @@
 
         body {
             line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            overflow-x: hidden;
         }
 
         .header {
             text-align: center;
-            padding: 3rem 2rem;
+            padding: 3rem 1rem;
             background: white;
             max-width: 1200px;
             margin: 0 auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
         .logo {
@@ -140,6 +149,11 @@
 
             .modal-content {
                 margin: 1rem;
+            }
+            
+            .logo {
+                max-width: 90%; /* Make logo slightly smaller on mobile */
+                margin: 1rem auto;
             }
         }
     </style>
