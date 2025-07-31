@@ -577,17 +577,15 @@
             }
             
             // GOOGLE FORMS SUBMISSION
-            // Replace these with your actual Google Form details
-            const GOOGLE_FORM_ACTION_URL = 'https://docs.google.com/forms/d/e/YOUR_FORM_ID/formResponse';
+            // Replace this with your actual Google Form URL (with /formResponse at the end)
+            const GOOGLE_FORM_ACTION_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSdMclqGrYKlZjtKs7gTIFMxYyubrMQgPq3_TxU5FRYkA25KAg/formResponse';
             
             const formData = new FormData();
-            // Replace these entry.XXXXX with your actual field IDs from Google Forms
-            formData.append('entry.XXXXX', orderDetails.name); // Name field
-            formData.append('entry.XXXXX', orderDetails.phone); // Phone field
-            formData.append('entry.XXXXX', orderDetails.email); // Email field
-            formData.append('entry.XXXXX', orderDetails.pizzaOrders); // Pizza orders
-            formData.append('entry.XXXXX', orderDetails.requestedDates.split(',').join(', ')); // Dates
-            formData.append('entry.XXXXX', orderDetails.notes || 'None'); // Notes
+            formData.append('entry.1320462008', orderDetails.name); // Name field
+            formData.append('entry.1026309412', orderDetails.phone); // Phone field
+            formData.append('entry.101725127', orderDetails.email); // Email field
+            formData.append('entry.1286854769', orderDetails.pizzaOrders); // Pizza orders
+            formData.append('entry.1232637870', orderDetails.requestedDates.split(',').join(', ')); // Dates
             
             // Submit to Google Forms
             fetch(GOOGLE_FORM_ACTION_URL, {
