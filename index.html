@@ -3,18 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Caro's Pizzeria</title>
+    <title>Caro's Pizzeria - Artisanal Wood-Fired Pizza</title>
+    <link rel="icon" type="image/png" href="favicon.png">
     <style>
         :root {
             --primary-red: #E31837;
             --dark-red: #C41230;
+            --warm-brown: #8B4513;
+            --cream: #FFF8E7;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: Arial, sans-serif;
+            font-family: Georgia, serif;
         }
 
         body {
@@ -23,6 +26,7 @@
             padding: 0;
             width: 100%;
             overflow-x: hidden;
+            background: var(--cream);
         }
 
         .header {
@@ -36,6 +40,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .logo {
@@ -44,11 +49,53 @@
             display: block;
         }
 
-        .phone {
+        .tagline {
+            font-style: italic;
+            color: var(--warm-brown);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .contact-options {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+
+        .phone-option {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
             color: var(--primary-red);
-            font-size: 2rem;
+            font-size: 1.3rem;
             font-weight: bold;
             text-decoration: none;
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--primary-red);
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .phone-option:hover {
+            background: var(--primary-red);
+            color: white;
+        }
+
+        .phone-option.secondary {
+            border-color: #999;
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .phone-option.secondary:hover {
+            background: #666;
+            color: white;
+        }
+
+        .contact-icon {
+            font-size: 1.5rem;
         }
 
         .location {
@@ -76,6 +123,33 @@
             background: var(--dark-red);
         }
 
+        .info-section {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .info-section h2 {
+            color: var(--dark-red);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .menu-item {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: var(--cream);
+            border-radius: 5px;
+        }
+
+        .menu-item h3 {
+            color: var(--warm-brown);
+            margin-bottom: 0.5rem;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -84,11 +158,13 @@
             width: 100%;
             height: 100%;
             background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            overflow-y: auto;
         }
 
         .modal-content {
             background: white;
-            max-width: 500px;
+            max-width: 600px;
             margin: 2rem auto;
             padding: 2rem;
             border-radius: 5px;
@@ -101,23 +177,122 @@
             top: 1rem;
             font-size: 1.5rem;
             cursor: pointer;
+            color: #666;
+        }
+
+        .close:hover {
+            color: #000;
         }
 
         .form-group {
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
 
         label {
             display: block;
             margin-bottom: 0.5rem;
             color: #333;
+            font-weight: bold;
         }
 
-        input, textarea {
+        input, textarea, select {
             width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        .notice-box {
+            background: #FFF3CD;
+            border: 1px solid #FFE69C;
+            border-radius: 5px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .notice-box h3 {
+            color: var(--warm-brown);
+            margin-bottom: 0.5rem;
+        }
+
+        .pizza-order-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            align-items: center;
+        }
+
+        .pizza-type {
+            flex: 1;
+        }
+
+        .pizza-quantity {
+            width: 80px;
+        }
+
+        .remove-pizza {
+            width: 30px;
+            height: 30px;
+            border: none;
+            background: var(--primary-red);
+            color: white;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            line-height: 1;
+        }
+
+        .add-pizza-button {
+            background: none;
+            border: 1px dashed #999;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        .add-pizza-button:hover {
+            border-color: var(--primary-red);
+            color: var(--primary-red);
+        }
+
+        .date-selector {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .date-option {
             padding: 0.5rem;
             border: 1px solid #ddd;
             border-radius: 4px;
+            text-align: center;
+            cursor: pointer;
+            background: white;
+            transition: all 0.3s;
+        }
+
+        .date-option:hover:not(.disabled) {
+            background: var(--cream);
+            border-color: var(--primary-red);
+        }
+
+        .date-option.selected {
+            background: var(--primary-red);
+            color: white;
+        }
+
+        .date-option.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #f0f0f0;
         }
 
         .hours {
@@ -131,15 +306,23 @@
         }
 
         .hours h2 {
-            color: #333;
+            color: var(--dark-red);
             margin-bottom: 1rem;
         }
 
         footer {
             text-align: center;
             padding: 2rem;
-            background: #f5f5f5;
-            margin-top: 2rem;
+            background: #333;
+            color: white;
+            margin-top: 3rem;
+        }
+
+        .process-info {
+            font-style: italic;
+            color: #666;
+            text-align: center;
+            margin: 1rem 0;
         }
 
         @media (max-width: 600px) {
@@ -152,8 +335,12 @@
             }
             
             .logo {
-                max-width: 90%; /* Make logo slightly smaller on mobile */
+                max-width: 90%;
                 margin: 1rem auto;
+            }
+
+            .date-selector {
+                grid-template-columns: repeat(4, 1fr);
             }
         }
     </style>
@@ -161,70 +348,259 @@
 <body>
     <header class="header">
         <img src="carospizzerialogo.png" alt="Caro's Pizza" class="logo">
-        <a href="tel:5052264632" class="phone">(505) 226-4632</a>
+        <div class="tagline">Handcrafted with 72-hour fermented dough</div>
+        <div class="contact-options">
+            <a href="sms:5052264632?body=Hi!%20I'd%20like%20to%20order%20a%20pizza." class="phone-option">
+                <span class="contact-icon">💬</span>
+                TEXT: (505) 226-4632
+            </a>
+            <a href="tel:5052264632" class="phone-option secondary">
+                <span class="contact-icon">📞</span>
+                CALL: (505) 226-4632
+            </a>
+        </div>
         <div class="location">HUGER, SC</div>
-        <button class="order-button" onclick="openOrderModal()">ORDER NOW</button>
+        <button class="order-button" onclick="openOrderModal()">REQUEST ONLINE</button>
     </header>
+
+    <div class="info-section">
+        <h2>Our Pies</h2>
+        <p class="process-info">All from scratch with a dough that takes days to make.</p>
+        
+        <div class="menu-item">
+            <h3>Grandma Gigi Style Plain</h3>
+            <p>Jersey tomatoes in the sauce, mozzarella and a little of this and a little of that. A take on the traditional grandma style pizza.</p>
+        </div>
+        
+        <div class="menu-item">
+            <h3>Pepperoni</h3>
+            <p>It's the Grandma Gigi Style Plain with pepperoni on top. But crisped nicely, of course.</p>
+        </div>
+    </div>
 
     <div id="orderModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeOrderModal()">&times;</span>
-            <h2>Place Your Order</h2>
+            <h2>Request Your Artisanal Pizza</h2>
+            
+            <div class="notice-box">
+                <h3>Important Notice</h3>
+                <p>Our dough requires 2-3 days of fermentation for the perfect flavor and texture. Each pizza is handmade to order.</p>
+                <p><strong>Minimum 3 days advance notice required.</strong></p>
+                <p>After you submit your request, I'll personally contact you to confirm availability and arrange pickup details.</p>
+            </div>
+
             <form id="orderForm">
                 <div class="form-group">
                     <label for="name">Name:</label>
                     <input type="text" id="name" required>
                 </div>
+                
                 <div class="form-group">
                     <label for="phone">Phone:</label>
-                    <input type="tel" id="phone" required>
+                    <input type="tel" id="phone" required placeholder="Best number to reach you">
                 </div>
+                
                 <div class="form-group">
-                    <label for="pickupTime">Pickup Time:</label>
-                    <input type="time" id="pickupTime" required>
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" required>
                 </div>
+                
                 <div class="form-group">
-                    <label for="order">Order Details:</label>
-                    <textarea id="order" rows="4" required></textarea>
+                    <label for="pizzaOrder">Pizza Order:</label>
+                    <div id="pizzaOrderContainer">
+                        <div class="pizza-order-row">
+                            <select class="pizza-type" required>
+                                <option value="">Select pizza</option>
+                                <option value="plain">Grandma Gigi Style Plain</option>
+                                <option value="pepperoni">Pepperoni</option>
+                            </select>
+                            <select class="pizza-quantity" required>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                            <button type="button" class="remove-pizza" onclick="removePizzaRow(this)" style="display:none;">×</button>
+                        </div>
+                    </div>
+                    <button type="button" class="add-pizza-button" onclick="addPizzaRow()">+ Add Another Pizza Type</button>
                 </div>
-                <button type="submit" class="order-button">Submit Order</button>
+                
+                <div class="form-group">
+                    <label for="requestedDates">Preferred Pickup Dates (select all that work):</label>
+                    <div id="dateSelector" class="date-selector"></div>
+                    <input type="hidden" id="requestedDates" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="notes">Special Notes or Requests:</label>
+                    <textarea id="notes" rows="3" placeholder="Any dietary restrictions, specific quantity if 6+, or other notes"></textarea>
+                </div>
+                
+                <button type="submit" class="order-button">Submit Pizza Request</button>
             </form>
         </div>
     </div>
 
     <div class="hours">
-        <h2>Hours</h2>
-        <p>Monday - Thursday: 11:00 AM - 9:00 PM</p>
-        <p>Friday - Saturday: 11:00 AM - 10:00 PM</p>
-        <p>Sunday: 12:00 PM - 8:00 PM</p>
+        <h2>How to Order</h2>
+        <p><strong>1.</strong> Text us or submit online (we need 3 days notice)</p>
+        <p><strong>2.</strong> We'll text you back within 24 hours to confirm</p>
+        <p><strong>3.</strong> We'll arrange a pickup time that works for both of us</p>
+        <p><strong>4.</strong> Pay when you pick up your freshly made pizza</p>
     </div>
 
     <footer>
-        <p>&copy; 2025 Caro's Pizzeria. All rights reserved.</p>
+        <p>&copy; 2025 Caro's Pizzeria. Artisanal Pizza Made with Love.</p>
     </footer>
 
     <script>
+        // Add/remove pizza rows functionality
+        function addPizzaRow() {
+            const container = document.getElementById('pizzaOrderContainer');
+            const newRow = document.createElement('div');
+            newRow.className = 'pizza-order-row';
+            newRow.innerHTML = `
+                <select class="pizza-type" required>
+                    <option value="">Select pizza</option>
+                    <option value="plain">Grandma Gigi Style Plain</option>
+                    <option value="pepperoni">Pepperoni</option>
+                </select>
+                <select class="pizza-quantity" required>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+                <button type="button" class="remove-pizza" onclick="removePizzaRow(this)">×</button>
+            `;
+            container.appendChild(newRow);
+            
+            // Show remove buttons when there's more than one row
+            const removeButtons = container.querySelectorAll('.remove-pizza');
+            removeButtons.forEach(btn => btn.style.display = removeButtons.length > 1 ? 'block' : 'none');
+        }
+
+        function removePizzaRow(button) {
+            const container = document.getElementById('pizzaOrderContainer');
+            button.parentElement.remove();
+            
+            // Hide remove buttons if only one row left
+            const removeButtons = container.querySelectorAll('.remove-pizza');
+            removeButtons.forEach(btn => btn.style.display = removeButtons.length > 1 ? 'block' : 'none');
+        }
+
+        // Generate date options for the next 14 days, starting 3 days from now
+        function generateDateOptions() {
+            const dateSelector = document.getElementById('dateSelector');
+            const today = new Date();
+            const selectedDates = new Set();
+            
+            for (let i = 0; i < 14; i++) {
+                const date = new Date(today);
+                date.setDate(today.getDate() + i);
+                
+                const dateOption = document.createElement('div');
+                dateOption.className = 'date-option';
+                
+                if (i < 3) {
+                    dateOption.className += ' disabled';
+                    dateOption.title = 'Minimum 3 days notice required';
+                } else {
+                    dateOption.onclick = function() {
+                        this.classList.toggle('selected');
+                        const dateStr = date.toISOString().split('T')[0];
+                        if (this.classList.contains('selected')) {
+                            selectedDates.add(dateStr);
+                        } else {
+                            selectedDates.delete(dateStr);
+                        }
+                        document.getElementById('requestedDates').value = Array.from(selectedDates).join(',');
+                    };
+                }
+                
+                const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+                const monthDay = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                
+                dateOption.innerHTML = `<div>${dayName}</div><div>${monthDay}</div>`;
+                dateSelector.appendChild(dateOption);
+            }
+        }
+
         function openOrderModal() {
             document.getElementById('orderModal').style.display = 'block';
+            generateDateOptions();
         }
 
         function closeOrderModal() {
             document.getElementById('orderModal').style.display = 'none';
+            document.getElementById('orderForm').reset();
+            document.getElementById('dateSelector').innerHTML = '';
         }
 
         document.getElementById('orderForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            // Here we'll add Stripe payment integration
+            
+            // Collect pizza orders
+            const pizzaRows = document.querySelectorAll('.pizza-order-row');
+            const pizzaOrders = [];
+            let totalQuantity = 0;
+            
+            pizzaRows.forEach(row => {
+                const type = row.querySelector('.pizza-type').value;
+                const quantity = row.querySelector('.pizza-quantity').value;
+                if (type) {
+                    const pizzaName = type === 'plain' ? 'Grandma Gigi Style Plain' : 'Pepperoni';
+                    pizzaOrders.push(`${quantity} ${pizzaName}`);
+                    totalQuantity += parseInt(quantity);
+                }
+            });
+            
             const orderDetails = {
                 name: document.getElementById('name').value,
                 phone: document.getElementById('phone').value,
-                pickupTime: document.getElementById('pickupTime').value,
-                order: document.getElementById('order').value
+                email: document.getElementById('email').value,
+                pizzaOrders: pizzaOrders.join(', '),
+                totalQuantity: totalQuantity,
+                requestedDates: document.getElementById('requestedDates').value,
+                notes: document.getElementById('notes').value,
+                submittedAt: new Date().toISOString()
             };
-            console.log('Order submitted:', orderDetails);
-            // We'll add email notification here
-            closeOrderModal();
-            alert('Thank you for your order! We\'ll confirm it shortly.');
+            
+            // Check if at least one date was selected
+            if (!orderDetails.requestedDates) {
+                alert('Please select at least one preferred pickup date.');
+                return;
+            }
+            
+            // GOOGLE FORMS SUBMISSION
+            // Replace these with your actual Google Form details
+            const GOOGLE_FORM_ACTION_URL = 'https://docs.google.com/forms/d/e/YOUR_FORM_ID/formResponse';
+            
+            const formData = new FormData();
+            // Replace these entry.XXXXX with your actual field IDs from Google Forms
+            formData.append('entry.XXXXX', orderDetails.name); // Name field
+            formData.append('entry.XXXXX', orderDetails.phone); // Phone field
+            formData.append('entry.XXXXX', orderDetails.email); // Email field
+            formData.append('entry.XXXXX', orderDetails.pizzaOrders); // Pizza orders
+            formData.append('entry.XXXXX', orderDetails.requestedDates.split(',').join(', ')); // Dates
+            formData.append('entry.XXXXX', orderDetails.notes || 'None'); // Notes
+            
+            // Submit to Google Forms
+            fetch(GOOGLE_FORM_ACTION_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: formData
+            }).then(() => {
+                closeOrderModal();
+                alert(`Thank you ${orderDetails.name}! Your request for ${orderDetails.totalQuantity} pizza${orderDetails.totalQuantity > 1 ? 's' : ''} has been received. I'll contact you at ${orderDetails.phone} within 24 hours to confirm availability.`);
+            }).catch((error) => {
+                console.error('Error:', error);
+                alert('There was an error submitting your request. Please try again or text us at (505) 226-4632.');
+            });
         });
 
         // Close modal if clicking outside
