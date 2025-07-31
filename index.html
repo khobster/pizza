@@ -2,64 +2,94 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Caro's Pizzeria</title>
   <link rel="icon" type="image/png" href="favicon.png" />
   <style>
-    :root{ --primary-red:#E31837; --dark-red:#C41230; --warm-brown:#8B4513; --cream:#FFF8E7; }
-    *{ margin:0; padding:0; box-sizing:border-box; font-family:Georgia,serif; }
-    body{ line-height:1.6; margin:0; padding:0; width:100%; overflow-x:hidden; background:var(--cream); }
-    .header{ text-align:center; padding:3rem 1rem; background:white; max-width:1200px; margin:0 auto; width:100%;
-      display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,.1); }
-    .logo{ max-width:400px; margin:2rem auto; display:block; }
-    .tagline{ font-style:italic; color:var(--warm-brown); margin-bottom:1rem; font-size:1.1rem; }
-    .contact-options{ display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; margin:1rem 0; }
-    .phone-option{ display:inline-flex; align-items:center; gap:.5rem; color:var(--primary-red); font-size:1.3rem; font-weight:bold;
-      text-decoration:none; padding:.5rem 1rem; border:2px solid var(--primary-red); border-radius:5px; transition:all .3s; }
-    .phone-option:hover{ background:var(--primary-red); color:white; }
-    .phone-option.secondary{ border-color:#ddd; color:#999; font-size:.9rem; padding:.4rem .8rem; }
-    .phone-option.secondary:hover{ background:#666; color:white; }
-    .order-button{ display:inline-block; background:var(--primary-red); color:white; padding:1.5rem 3rem; border-radius:5px;
-      text-decoration:none; font-weight:bold; margin:1rem 0; cursor:pointer; border:none; font-size:1.4rem; transition:all .3s;
-      box-shadow:0 4px 6px rgba(227,24,55,.3); }
-    .order-button:hover{ background:var(--dark-red); transform:translateY(-2px); box-shadow:0 6px 12px rgba(227,24,55,.4); }
-    .info-section{ max-width:800px; margin:2rem auto; padding:2rem; background:white; border-radius:5px; box-shadow:0 2px 4px rgba(0,0,0,.1); }
-    .info-section h2{ color:var(--dark-red); margin-bottom:1rem; text-align:center; }
-    .menu-item{ margin:1rem 0; padding:1rem; background:var(--cream); border-radius:5px; }
-    .menu-item h3{ color:var(--warm-brown); margin-bottom:.5rem; }
-    .modal{ display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.5); z-index:1000; overflow-y:auto; }
-    .modal-content{ background:white; max-width:600px; margin:2rem auto; padding:2rem; border-radius:5px; position:relative; }
-    .close{ position:absolute; right:1rem; top:1rem; font-size:1.5rem; cursor:pointer; color:#666; }
-    .close:hover{ color:#000; }
-    .form-group{ margin-bottom:1.5rem; }
-    label{ display:block; margin-bottom:.5rem; color:#333; font-weight:bold; }
-    input,textarea,select{ width:100%; padding:.75rem; border:1px solid #ddd; border-radius:4px; font-size:1rem; }
-    select{ cursor:pointer; }
-    .notice-box{ background:#FFF3CD; border:1px solid #FFE69C; border-radius:5px; padding:1rem; margin-bottom:1.5rem; }
-    .notice-box h3{ color:var(--warm-brown); margin-bottom:.5rem; }
-    .pizza-order-row{ display:flex; gap:.5rem; margin-bottom:.5rem; align-items:center; }
-    .pizza-type{ flex:1; }
-    .pizza-quantity{ width:80px; }
-    .remove-pizza{ width:30px; height:30px; border:none; background:var(--primary-red); color:white; border-radius:50%; cursor:pointer; font-size:1.2rem; line-height:1; }
-    .add-pizza-button{ background:none; border:1px dashed #999; padding:.5rem 1rem; border-radius:4px; cursor:pointer; color:#666; margin-top:.5rem; }
-    .add-pizza-button:hover{ border-color:var(--primary-red); color:var(--primary-red); }
-    .date-selector{ display:grid; grid-template-columns:repeat(7,1fr); gap:.5rem; margin-top:.5rem; }
-    .date-option{ padding:.5rem; border:1px solid #ddd; border-radius:4px; text-align:center; cursor:pointer; background:white; transition:all .3s; }
-    .date-option:hover:not(.disabled){ background:var(--cream); border-color:var(--primary-red); }
-    .date-option.selected{ background:var(--primary-red); color:white; }
-    .date-option.disabled{ opacity:.5; cursor:not-allowed; background:#f0f0f0; }
-    .hours{ max-width:600px; margin:2rem auto; padding:2rem; background:white; border-radius:5px; box-shadow:0 2px 4px rgba(0,0,0,.1); text-align:center; }
-    .hours h2{ color:var(--dark-red); margin-bottom:1rem; }
-    footer{ text-align:center; padding:2rem; background:#333; color:white; margin-top:3rem; }
-    .process-info{ font-style:italic; color:#666; text-align:center; margin:1rem 0; }
-    @media (max-width:600px){
-      .modal-content{ margin:1rem; }
-      .logo{ max-width:90%; margin:1rem auto; }
-      .date-selector{ grid-template-columns:repeat(4,1fr); }
+    :root {
+      --primary-red: #E31837;
+      --dark-red:    #C41230;
+      --warm-brown:  #8B4513;
+      --cream:       #FFF8E7;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; font-family:Georgia,serif; }
+    body { line-height:1.6; background:var(--cream); overflow-x:hidden; }
+
+    /* ---------- layout / typography ---------- */
+    .header      { text-align:center; padding:3rem 1rem; background:#fff;
+                   max-width:1200px; margin:0 auto; box-shadow:0 2px 4px rgba(0,0,0,.1); }
+    .logo        { max-width:400px; margin:2rem auto; display:block; }
+    .tagline     { font-style:italic; color:var(--warm-brown); font-size:1.1rem; margin-bottom:1rem; }
+    .contact-options { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; margin:1rem 0; }
+
+    .phone-option { display:inline-flex; align-items:center; gap:.5rem; font-weight:bold;
+                    padding:.5rem 1rem; border-radius:5px; text-decoration:none;
+                    border:2px solid var(--primary-red); color:var(--primary-red); font-size:1.3rem;
+                    transition:all .3s; }
+    .phone-option:hover { background:var(--primary-red); color:#fff; }
+    .phone-option.secondary { border-color:#ddd; color:#999; font-size:.9rem; padding:.4rem .8rem; }
+    .phone-option.secondary:hover { background:#666; color:#fff; }
+
+    .order-button { display:inline-block; background:var(--primary-red); color:#fff; border:none;
+                    padding:1.5rem 3rem; border-radius:5px; font-size:1.4rem; font-weight:bold;
+                    cursor:pointer; margin:1rem 0; transition:all .3s;
+                    box-shadow:0 4px 6px rgba(227,24,55,.3); }
+    .order-button:hover { background:var(--dark-red); transform:translateY(-2px);
+                          box-shadow:0 6px 12px rgba(227,24,55,.4); }
+
+    .info-section { max-width:800px; margin:2rem auto; padding:2rem; background:#fff;
+                    border-radius:5px; box-shadow:0 2px 4px rgba(0,0,0,.1); }
+    .info-section h2 { color:var(--dark-red); margin-bottom:1rem; text-align:center; }
+    .menu-item { margin:1rem 0; padding:1rem; background:var(--cream); border-radius:5px; }
+    .menu-item h3 { color:var(--warm-brown); margin-bottom:.5rem; }
+
+    /* ---------- modal ---------- */
+    .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:1000; overflow-y:auto; }
+    .modal-content { position:relative; background:#fff; max-width:600px; margin:2rem auto; padding:2rem; border-radius:5px; }
+    .close { position:absolute; top:1rem; right:1rem; font-size:1.5rem; cursor:pointer; color:#666; }
+    .close:hover { color:#000; }
+
+    .form-group { margin-bottom:1.5rem; }
+    label { display:block; margin-bottom:.5rem; font-weight:bold; color:#333; }
+    input, select { width:100%; padding:.75rem; border:1px solid #ddd; border-radius:4px; font-size:1rem; }
+    select { cursor:pointer; }
+
+    .notice-box { background:#FFF3CD; border:1px solid #FFE69C; border-radius:5px; padding:1rem; margin-bottom:1.5rem; }
+    .notice-box h3 { color:var(--warm-brown); margin-bottom:.5rem; }
+
+    .pizza-order-row { display:flex; gap:.5rem; margin-bottom:.5rem; align-items:center; }
+    .pizza-type { flex:1; }
+    .pizza-quantity { width:80px; }
+    .remove-pizza { width:30px; height:30px; border:none; background:var(--primary-red); color:#fff;
+                    border-radius:50%; cursor:pointer; font-size:1.2rem; line-height:1; }
+
+    .add-pizza-button { background:none; border:1px dashed #999; padding:.5rem 1rem; border-radius:4px;
+                        cursor:pointer; color:#666; margin-top:.5rem; }
+    .add-pizza-button:hover { border-color:var(--primary-red); color:var(--primary-red); }
+
+    .date-selector { display:grid; grid-template-columns:repeat(7,1fr); gap:.5rem; margin-top:.5rem; }
+    .date-option { padding:.5rem; text-align:center; border:1px solid #ddd; border-radius:4px; cursor:pointer; background:#fff; transition:all .3s; }
+    .date-option:hover:not(.disabled) { background:var(--cream); border-color:var(--primary-red); }
+    .date-option.selected { background:var(--primary-red); color:#fff; }
+    .date-option.disabled { opacity:.5; cursor:not-allowed; background:#f0f0f0; }
+
+    .hours { max-width:600px; margin:2rem auto; padding:2rem; background:#fff; border-radius:5px;
+             box-shadow:0 2px 4px rgba(0,0,0,.1); text-align:center; }
+    .hours h2 { color:var(--dark-red); margin-bottom:1rem; }
+
+    footer { text-align:center; padding:2rem; background:#333; color:#fff; margin-top:3rem; }
+
+    .process-info { font-style:italic; color:#666; text-align:center; margin:1rem 0; }
+
+    @media(max-width:600px) {
+      .modal-content { margin:1rem; }
+      .logo { max-width:90%; margin:1rem auto; }
+      .date-selector { grid-template-columns:repeat(4,1fr); }
     }
   </style>
 </head>
 <body>
+  <!-- ========= HEADER ========= -->
   <header class="header">
     <img src="carospizzerialogo.png" alt="Caro's Pizza" class="logo" />
     <div class="tagline">Home of the slow pizzeria pie.</div>
@@ -70,14 +100,22 @@
     </div>
   </header>
 
+  <!-- ========= MENU / INFO ========= -->
   <div class="info-section">
     <h2>Our Pies</h2>
     <p class="process-info">All from scratch with a dough that takes days to make.</p>
-    <div class="menu-item"><h3>Grandma Gigi Style Plain</h3><p>Jersey tomatoes in the sauce …</p></div>
-    <div class="menu-item"><h3>Pepperoni</h3><p>It’s the Grandma Gigi with pepperoni on top, crisped nicely.</p></div>
+
+    <div class="menu-item">
+      <h3>Grandma Gigi Style Plain</h3>
+      <p>Jersey tomatoes in the sauce, mozzarella, and a perfect grandma-style crust.</p>
+    </div>
+    <div class="menu-item">
+      <h3>Pepperoni</h3>
+      <p>The Grandma Gigi with crispy pepperoni on top.</p>
+    </div>
   </div>
 
-  <!-- MODAL -->
+  <!-- ========= ORDER MODAL ========= -->
   <div id="orderModal" class="modal">
     <div class="modal-content">
       <span class="close" onclick="closeOrderModal()">&times;</span>
@@ -86,13 +124,27 @@
       <div class="notice-box">
         <h3>Important Notice</h3>
         <p>Our dough ferments for 2-3 days; we need <strong>3 days’ notice</strong>.</p>
-        <p>After you submit, I’ll text you to confirm pickup.</p>
+        <p>After you submit, we’ll text you to confirm pickup.</p>
       </div>
 
       <form id="orderForm">
-        <div class="form-group"><label>Name: <input id="name" required></label></div>
-        <div class="form-group"><label>Phone: <input id="phone" type="tel" required placeholder="Best number"></label></div>
-        <div class="form-group"><label>Email: <input id="email" type="email" required></label></div>
+        <div class="form-group">
+          <label>Name:
+            <input id="name" required />
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label>Phone:
+            <input id="phone" type="tel" placeholder="Best number" required />
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label>Email:
+            <input id="email" type="email" required />
+          </label>
+        </div>
 
         <div class="form-group">
           <label>Pizza Order:</label>
@@ -115,7 +167,7 @@
         <div class="form-group">
           <label>Preferred Pickup Dates:</label>
           <div id="dateSelector" class="date-selector"></div>
-          <input type="hidden" id="requestedDates" required>
+          <input type="hidden" id="requestedDates" required />
         </div>
 
         <button type="submit" class="order-button">Submit Pizza Request</button>
@@ -123,6 +175,7 @@
     </div>
   </div>
 
+  <!-- ========= ORDER STEPS ========= -->
   <div class="hours">
     <h2>How to Order</h2>
     <p><strong>1.</strong> Text us or submit online (3 days’ notice)</p>
@@ -131,13 +184,17 @@
     <p><strong>4.</strong> Pay on pickup — enjoy!</p>
   </div>
 
-  <footer><p>&copy; 2025 Caro’s Pizzeria. Made with love.</p></footer>
+  <!-- ========= FOOTER ========= -->
+  <footer>
+    <p>&copy; 2025 Caro’s Pizzeria. Made with love.</p>
+  </footer>
 
+  <!-- ========= SCRIPTS ========= -->
   <script>
-    /* ========== CONFIG ========= */
+    /* ----- CONFIG ----- */
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxJyDlATzhkDmQbCoDzYl49jp6CYgqkW0tm9-LIeM1sbQsPGxQzFl69f_r3dfFbUkn2/exec';
-    const APPS_SECRET     = '88888888888888'; // must match your Apps Script
-    /* =========================== */
+    const APPS_SECRET     = '88888888888888';   // must match Apps Script
+    /* ------------------ */
 
     /* ---------- Pizza rows ---------- */
     function addPizzaRow() {
@@ -155,15 +212,16 @@
         </select>
         <button type="button" class="remove-pizza" onclick="removePizzaRow(this)">×</button>`;
       container.appendChild(row);
-
-      [...container.querySelectorAll('.remove-pizza')]
-        .forEach(btn => btn.style.display = container.children.length > 1 ? 'block' : 'none');
+      [...container.querySelectorAll('.remove-pizza')].forEach(btn =>
+        btn.style.display = container.children.length > 1 ? 'block' : 'none'
+      );
     }
     function removePizzaRow(btn) {
       const container = document.getElementById('pizzaOrderContainer');
       btn.parentElement.remove();
-      [...container.querySelectorAll('.remove-pizza')]
-        .forEach(b => b.style.display = container.children.length > 1 ? 'block' : 'none');
+      [...container.querySelectorAll('.remove-pizza')].forEach(b =>
+        b.style.display = container.children.length > 1 ? 'block' : 'none'
+      );
     }
 
     /* ---------- Date selector ---------- */
@@ -182,38 +240,46 @@
         } else {
           cell.onclick = function () {
             this.classList.toggle('selected');
-            const iso = d.toISOString().slice(0,10); // YYYY-MM-DD
+            const iso = d.toISOString().slice(0, 10); // YYYY-MM-DD
             this.classList.contains('selected') ? chosen.add(iso) : chosen.delete(iso);
             document.getElementById('requestedDates').value = [...chosen].join(',');
           };
         }
-        cell.innerHTML = `<div>${d.toLocaleDateString('en-US',{weekday:'short'})}</div>
-                          <div>${d.toLocaleDateString('en-US',{month:'short',day:'numeric'})}</div>`;
+        cell.innerHTML = `<div>${d.toLocaleDateString('en-US', { weekday: 'short' })}</div>
+                          <div>${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>`;
         sel.appendChild(cell);
       }
     }
 
     /* ---------- Modal ---------- */
-    function openOrderModal(){ document.getElementById('orderModal').style.display='block'; generateDateOptions(); }
-    function closeOrderModal(){ document.getElementById('orderModal').style.display='none'; document.getElementById('orderForm').reset(); }
-
+    function openOrderModal() {
+      document.getElementById('orderModal').style.display = 'block';
+      generateDateOptions();
+    }
+    function closeOrderModal() {
+      document.getElementById('orderModal').style.display = 'none';
+      document.getElementById('orderForm').reset();
+    }
     window.onclick = e => { if (e.target === document.getElementById('orderModal')) closeOrderModal(); };
 
     /* ---------- Form submit ---------- */
-    document.getElementById('orderForm').addEventListener('submit', async (e)=>{
+    document.getElementById('orderForm').addEventListener('submit', async e => {
       e.preventDefault();
 
       /* gather order */
       const rows = [...document.querySelectorAll('.pizza-order-row')];
       if (!rows.length) return alert('Choose at least one pizza.');
 
-      const pizzas = [], qtyTotal = rows.reduce((sum,row)=>{
+      const pizzas = [];
+      let qtyTotal = 0;
+      rows.forEach(row => {
         const type = row.querySelector('.pizza-type').value;
-        const qty  = parseInt(row.querySelector('.pizza-quantity').value,10)||0;
-        if (type) pizzas.push(`${qty} ${type==='plain'?'Grandma Gigi Style Plain':'Pepperoni'}`);
-        return sum+qty;
-      },0);
-
+        const qty  = parseInt(row.querySelector('.pizza-quantity').value, 10) || 0;
+        if (type) {
+          pizzas.push(`${qty} ${type === 'plain' ? 'Grandma Gigi Style Plain' : 'Pepperoni'}`);
+          qtyTotal += qty;
+        }
+      });
       if (!pizzas.length) return alert('Choose at least one pizza.');
 
       const dates = document.getElementById('requestedDates').value;
@@ -231,13 +297,16 @@
       };
 
       try {
-        const res = await fetch(APPS_SCRIPT_URL,{method:'POST',headers: { 'Content-Type': 'text/plain' },body:JSON.stringify(payload)});
-        const j   = await res.json();
-        if (!j.ok) throw new Error(j.error||'Unknown error');
+        /* SIMPLE CORS (no pre-flight) */
+        await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          mode:   'no-cors',
+          body:   JSON.stringify(payload)
+        });
 
         closeOrderModal();
-        alert(`Thank you ${payload.name}! Your request for ${qtyTotal} pizza${qtyTotal>1?'s':''} is in. I’ll text you soon.`);
-      } catch(err){
+        alert(`Thank you ${payload.name}! Your request for ${qtyTotal} pizza${qtyTotal > 1 ? 's' : ''} is in. I’ll text you soon.`);
+      } catch (err) {
         console.error(err);
         alert('Error submitting. Please try again or text (505) 226-4632.');
       }
