@@ -19,7 +19,6 @@
     .phone-option:hover{ background:var(--primary-red); color:white; }
     .phone-option.secondary{ border-color:#ddd; color:#999; font-size:.9rem; padding:.4rem .8rem; }
     .phone-option.secondary:hover{ background:#666; color:white; }
-    .contact-icon{ font-size:1.5rem; }
     .order-button{ display:inline-block; background:var(--primary-red); color:white; padding:1.5rem 3rem; border-radius:5px;
       text-decoration:none; font-weight:bold; margin:1rem 0; cursor:pointer; border:none; font-size:1.4rem; transition:all .3s;
       box-shadow:0 4px 6px rgba(227,24,55,.3); }
@@ -54,7 +53,6 @@
     footer{ text-align:center; padding:2rem; background:#333; color:white; margin-top:3rem; }
     .process-info{ font-style:italic; color:#666; text-align:center; margin:1rem 0; }
     @media (max-width:600px){
-      .phone{ font-size:1.5rem; }
       .modal-content{ margin:1rem; }
       .logo{ max-width:90%; margin:1rem auto; }
       .date-selector{ grid-template-columns:repeat(4,1fr); }
@@ -67,28 +65,19 @@
     <div class="tagline">Home of the slow pizzeria pie.</div>
     <button class="order-button" onclick="openOrderModal()">REQUEST ONLINE</button>
     <div class="contact-options">
-      <a href="sms:5052264632?body=Hi!%20I'd%20like%20to%20order%20a%20pizza." class="phone-option secondary">
-        <span class="contact-icon">💬</span> Text
-      </a>
-      <a href="tel:5052264632" class="phone-option secondary">
-        <span class="contact-icon">📞</span> Call
-      </a>
+      <a href="sms:5052264632?body=Hi!%20I'd%20like%20to%20order%20a%20pizza." class="phone-option secondary">💬 Text</a>
+      <a href="tel:5052264632" class="phone-option secondary">📞 Call</a>
     </div>
   </header>
 
   <div class="info-section">
     <h2>Our Pies</h2>
     <p class="process-info">All from scratch with a dough that takes days to make.</p>
-    <div class="menu-item">
-      <h3>Grandma Gigi Style Plain</h3>
-      <p>Jersey tomatoes in the sauce, mozzarella and a little of this and a little of that. A take on the traditional grandma style pizza.</p>
-    </div>
-    <div class="menu-item">
-      <h3>Pepperoni</h3>
-      <p>It's the Grandma Gigi Style Plain with pepperoni on top. But crisped nicely, of course.</p>
-    </div>
+    <div class="menu-item"><h3>Grandma Gigi Style Plain</h3><p>Jersey tomatoes in the sauce …</p></div>
+    <div class="menu-item"><h3>Pepperoni</h3><p>It’s the Grandma Gigi with pepperoni on top, crisped nicely.</p></div>
   </div>
 
+  <!-- MODAL -->
   <div id="orderModal" class="modal">
     <div class="modal-content">
       <span class="close" onclick="closeOrderModal()">&times;</span>
@@ -96,29 +85,17 @@
 
       <div class="notice-box">
         <h3>Important Notice</h3>
-        <p>Our dough requires 2-3 days of fermentation for the perfect flavor and texture. Each pizza is handmade to order.</p>
-        <p><strong>Minimum 3 days advance notice required.</strong></p>
-        <p>After you submit your request, I'll personally contact you to confirm availability and arrange pickup details.</p>
+        <p>Our dough ferments for 2-3 days; we need <strong>3 days’ notice</strong>.</p>
+        <p>After you submit, I’ll text you to confirm pickup.</p>
       </div>
 
       <form id="orderForm">
-        <div class="form-group">
-          <label for="name">Name:</label>
-          <input type="text" id="name" required />
-        </div>
+        <div class="form-group"><label>Name: <input id="name" required></label></div>
+        <div class="form-group"><label>Phone: <input id="phone" type="tel" required placeholder="Best number"></label></div>
+        <div class="form-group"><label>Email: <input id="email" type="email" required></label></div>
 
         <div class="form-group">
-          <label for="phone">Phone:</label>
-          <input type="tel" id="phone" required placeholder="Best number to reach you" />
-        </div>
-
-        <div class="form-group">
-          <label for="email">Email:</label>
-          <input type="email" id="email" required />
-        </div>
-
-        <div class="form-group">
-          <label for="pizzaOrder">Pizza Order:</label>
+          <label>Pizza Order:</label>
           <div id="pizzaOrderContainer">
             <div class="pizza-order-row">
               <select class="pizza-type" required>
@@ -127,20 +104,18 @@
                 <option value="pepperoni">Pepperoni</option>
               </select>
               <select class="pizza-quantity" required>
-                <option value="1">1</option><option value="2">2</option>
-                <option value="3">3</option><option value="4">4</option>
-                <option value="5">5</option>
+                <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
               </select>
               <button type="button" class="remove-pizza" onclick="removePizzaRow(this)" style="display:none;">×</button>
             </div>
           </div>
-          <button type="button" class="add-pizza-button" onclick="addPizzaRow()">+ Add Another Pizza Type</button>
+          <button type="button" class="add-pizza-button" onclick="addPizzaRow()">+ Add Another Pizza</button>
         </div>
 
         <div class="form-group">
-          <label for="requestedDates">Preferred Pickup Dates (select all that work):</label>
+          <label>Preferred Pickup Dates:</label>
           <div id="dateSelector" class="date-selector"></div>
-          <input type="hidden" id="requestedDates" required />
+          <input type="hidden" id="requestedDates" required>
         </div>
 
         <button type="submit" class="order-button">Submit Pizza Request</button>
@@ -150,191 +125,123 @@
 
   <div class="hours">
     <h2>How to Order</h2>
-    <p><strong>1.</strong> Text us or submit online (we need 3 days notice)</p>
-    <p><strong>2.</strong> We'll text you back within 24 hours to confirm</p>
-    <p><strong>3.</strong> We'll arrange a pickup time that works for both of us</p>
-    <p><strong>4.</strong> Pay when you pick up your freshly made pizza</p>
+    <p><strong>1.</strong> Text us or submit online (3 days’ notice)</p>
+    <p><strong>2.</strong> We’ll confirm within 24 hours</p>
+    <p><strong>3.</strong> Arrange pickup time</p>
+    <p><strong>4.</strong> Pay on pickup — enjoy!</p>
   </div>
 
-  <footer>
-    <p>&copy; 2024 Caro's Pizzeria. Artisanal Pizza Made with Love.</p>
-  </footer>
+  <footer><p>&copy; 2025 Caro’s Pizzeria. Made with love.</p></footer>
 
   <script>
-    // Google Form endpoint
-    const GOOGLE_FORM_ACTION_URL =
-      'https://docs.google.com/forms/d/e/1FAIpQLSdMclqGrYKlZjtKs7gTIFMxYyubrMQgPq3_TxU5FRYkA25KAg/formResponse';
+    /* ========== CONFIG ========= */
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxJyDlATzhkDmQbCoDzYl49jp6CYgqkW0tm9-LIeM1sbQsPGxQzFl69f_r3dfFbUkn2/exec';
+    const APPS_SECRET     = '88888888888888'; // must match your Apps Script
+    /* =========================== */
 
-    // Exact entry IDs from your console output (DOM order = form order)
-    const ENTRY_IDS = {
-      name: '1320462000',
-      phone: '1026309412',
-      email: '201725127',
-      pizzaOrders: '128654769',
-      preferredDates: '1232637870'
-    };
-
-    // Add/remove pizza rows
+    /* ---------- Pizza rows ---------- */
     function addPizzaRow() {
       const container = document.getElementById('pizzaOrderContainer');
-      const newRow = document.createElement('div');
-      newRow.className = 'pizza-order-row';
-      newRow.innerHTML = `
+      const row = document.createElement('div');
+      row.className = 'pizza-order-row';
+      row.innerHTML = `
         <select class="pizza-type" required>
           <option value="">Select pizza</option>
           <option value="plain">Grandma Gigi Style Plain</option>
           <option value="pepperoni">Pepperoni</option>
         </select>
         <select class="pizza-quantity" required>
-          <option value="1">1</option><option value="2">2</option>
-          <option value="3">3</option><option value="4">4</option>
-          <option value="5">5</option>
+          <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
         </select>
-        <button type="button" class="remove-pizza" onclick="removePizzaRow(this)">×</button>
-      `;
-      container.appendChild(newRow);
+        <button type="button" class="remove-pizza" onclick="removePizzaRow(this)">×</button>`;
+      container.appendChild(row);
 
-      const removeButtons = container.querySelectorAll('.remove-pizza');
-      removeButtons.forEach(btn => btn.style.display = removeButtons.length > 1 ? 'block' : 'none');
+      [...container.querySelectorAll('.remove-pizza')]
+        .forEach(btn => btn.style.display = container.children.length > 1 ? 'block' : 'none');
     }
-
-    function removePizzaRow(button) {
+    function removePizzaRow(btn) {
       const container = document.getElementById('pizzaOrderContainer');
-      button.parentElement.remove();
-      const removeButtons = container.querySelectorAll('.remove-pizza');
-      removeButtons.forEach(btn => btn.style.display = removeButtons.length > 1 ? 'block' : 'none');
+      btn.parentElement.remove();
+      [...container.querySelectorAll('.remove-pizza')]
+        .forEach(b => b.style.display = container.children.length > 1 ? 'block' : 'none');
     }
 
-    // Generate date options (local time; disable first 3 days)
+    /* ---------- Date selector ---------- */
     function generateDateOptions() {
-      const dateSelector = document.getElementById('dateSelector');
-      dateSelector.innerHTML = ''; // idempotent
-
-      const today = new Date();
-      const selectedDates = new Set();
+      const sel = document.getElementById('dateSelector');
+      sel.innerHTML = '';
+      const today = new Date(), chosen = new Set();
 
       for (let i = 0; i < 14; i++) {
-        const date = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
-
-        const dateOption = document.createElement('div');
-        dateOption.className = 'date-option';
-
+        const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
+        const cell = document.createElement('div');
+        cell.className = 'date-option';
         if (i < 3) {
-          dateOption.className += ' disabled';
-          dateOption.title = 'Minimum 3 days notice required';
+          cell.classList.add('disabled');
+          cell.title = 'Need 3 days notice';
         } else {
-          dateOption.onclick = function () {
+          cell.onclick = function () {
             this.classList.toggle('selected');
-            const y = date.getFullYear();
-            const m = String(date.getMonth() + 1).padStart(2, '0');
-            const d = String(date.getDate()).padStart(2, '0');
-            const dateStr = `${y}-${m}-${d}`;
-
-            if (this.classList.contains('selected')) {
-              selectedDates.add(dateStr);
-            } else {
-              selectedDates.delete(dateStr);
-            }
-            document.getElementById('requestedDates').value = Array.from(selectedDates).join(',');
+            const iso = d.toISOString().slice(0,10); // YYYY-MM-DD
+            this.classList.contains('selected') ? chosen.add(iso) : chosen.delete(iso);
+            document.getElementById('requestedDates').value = [...chosen].join(',');
           };
         }
-
-        const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
-        const monthDay = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        dateOption.innerHTML = `<div>${dayName}</div><div>${monthDay}</div>`;
-        dateSelector.appendChild(dateOption);
+        cell.innerHTML = `<div>${d.toLocaleDateString('en-US',{weekday:'short'})}</div>
+                          <div>${d.toLocaleDateString('en-US',{month:'short',day:'numeric'})}</div>`;
+        sel.appendChild(cell);
       }
     }
 
-    function openOrderModal() {
-      document.getElementById('orderModal').style.display = 'block';
-      generateDateOptions();
-    }
+    /* ---------- Modal ---------- */
+    function openOrderModal(){ document.getElementById('orderModal').style.display='block'; generateDateOptions(); }
+    function closeOrderModal(){ document.getElementById('orderModal').style.display='none'; document.getElementById('orderForm').reset(); }
 
-    function closeOrderModal() {
-      document.getElementById('orderModal').style.display = 'none';
-      document.getElementById('orderForm').reset();
-      document.getElementById('dateSelector').innerHTML = '';
-    }
+    window.onclick = e => { if (e.target === document.getElementById('orderModal')) closeOrderModal(); };
 
-    document.getElementById('orderForm').addEventListener('submit', function (e) {
+    /* ---------- Form submit ---------- */
+    document.getElementById('orderForm').addEventListener('submit', async (e)=>{
       e.preventDefault();
 
-      // Collect pizza orders
-      const pizzaRows = document.querySelectorAll('.pizza-order-row');
-      const pizzaOrders = [];
-      let totalQuantity = 0;
+      /* gather order */
+      const rows = [...document.querySelectorAll('.pizza-order-row')];
+      if (!rows.length) return alert('Choose at least one pizza.');
 
-      pizzaRows.forEach(row => {
+      const pizzas = [], qtyTotal = rows.reduce((sum,row)=>{
         const type = row.querySelector('.pizza-type').value;
-        const quantity = parseInt(row.querySelector('.pizza-quantity').value, 10);
-        if (type) {
-          const pizzaName = type === 'plain' ? 'Grandma Gigi Style Plain' : 'Pepperoni';
-          pizzaOrders.push(`${quantity} ${pizzaName}`);
-          totalQuantity += quantity;
-        }
-      });
+        const qty  = parseInt(row.querySelector('.pizza-quantity').value,10)||0;
+        if (type) pizzas.push(`${qty} ${type==='plain'?'Grandma Gigi Style Plain':'Pepperoni'}`);
+        return sum+qty;
+      },0);
 
-      if (pizzaOrders.length === 0) {
-        alert('Please choose at least one pizza.');
-        return;
-      }
+      if (!pizzas.length) return alert('Choose at least one pizza.');
 
-      const orderDetails = {
-        name: document.getElementById('name').value.trim(),
+      const dates = document.getElementById('requestedDates').value;
+      if (!dates) return alert('Select pickup date(s).');
+
+      const payload = {
+        secret: APPS_SECRET,
+        name:  document.getElementById('name').value.trim(),
         phone: document.getElementById('phone').value.trim(),
         email: document.getElementById('email').value.trim(),
-        pizzaOrders: pizzaOrders.join(', '),
-        totalQuantity,
-        requestedDates: document.getElementById('requestedDates').value,
+        pizzaOrders: pizzas.join(', '),
+        totalQuantity: qtyTotal,
+        requestedDates: dates,
         submittedAt: new Date().toISOString()
       };
 
-      if (!orderDetails.requestedDates) {
-        alert('Please select at least one preferred pickup date.');
-        return;
-      }
+      try {
+        const res = await fetch(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+        const j   = await res.json();
+        if (!j.ok) throw new Error(j.error||'Unknown error');
 
-      // Build x-www-form-urlencoded payload for Google Forms
-      const params = new URLSearchParams();
-      params.append(`entry.${ENTRY_IDS.name}`, orderDetails.name);
-      params.append(`entry.${ENTRY_IDS.phone}`, orderDetails.phone);
-      params.append(`entry.${ENTRY_IDS.email}`, orderDetails.email);
-      params.append(`entry.${ENTRY_IDS.pizzaOrders}`, orderDetails.pizzaOrders);
-
-      // For this form, Preferred Dates is a short-answer text field; send a readable string.
-      const prettyDates = orderDetails.requestedDates
-        .split(',')
-        .map(date => {
-          const d = new Date(date + 'T00:00:00');
-          return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-        })
-        .join(', ');
-      params.append(`entry.${ENTRY_IDS.preferredDates}`, prettyDates);
-
-      fetch(GOOGLE_FORM_ACTION_URL, {
-        method: 'POST',
-        // Remove 'mode' while debugging to see actual status in Network tab
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: params.toString()
-      })
-      .then(() => {
         closeOrderModal();
-        alert(`Thank you ${orderDetails.name}! Your request for ${orderDetails.totalQuantity} pizza${orderDetails.totalQuantity > 1 ? 's' : ''} has been received. I'll contact you at ${orderDetails.phone} within 24 hours to confirm availability.`);
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-        alert('There was an error submitting your request. Please try again or text us at (505) 226-4632.');
-      });
+        alert(`Thank you ${payload.name}! Your request for ${qtyTotal} pizza${qtyTotal>1?'s':''} is in. I’ll text you soon.`);
+      } catch(err){
+        console.error(err);
+        alert('Error submitting. Please try again or text (505) 226-4632.');
+      }
     });
-
-    // Close modal when clicking outside
-    window.onclick = function (event) {
-      if (event.target === document.getElementById('orderModal')) {
-        closeOrderModal();
-      }
-    };
   </script>
 </body>
 </html>
