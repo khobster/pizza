@@ -590,11 +590,13 @@
             
             // Create URL-encoded form data instead of FormData
             const params = new URLSearchParams();
-            params.append('entry.1320462008', orderDetails.name);
-            params.append('entry.1026309412', orderDetails.phone);
-            params.append('entry.101725127', orderDetails.email);
-            params.append('entry.1286854769', orderDetails.pizzaOrders);
-            params.append('entry.1232637870', formattedDates);
+
+// Corrected entry IDs based on your screenshot
+params.append('entry.1320462008', orderDetails.name);         // Name
+params.append('entry.1026309412', orderDetails.phone);       // Phone
+params.append('entry.281725127', orderDetails.email);        // CORRECTED Email ID
+params.append('entry.1286854769', orderDetails.pizzaOrders); // Pizza Order
+params.append('entry.1232637870', formattedDates);         // Requested Dates
             
             // Submit to Google Forms
             fetch(GOOGLE_FORM_ACTION_URL, {
