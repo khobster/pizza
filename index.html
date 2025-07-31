@@ -437,11 +437,6 @@
                     <input type="hidden" id="requestedDates" required>
                 </div>
                 
-                <div class="form-group">
-                    <label for="notes">Special Notes or Requests:</label>
-                    <textarea id="notes" rows="3" placeholder="Any dietary restrictions, specific quantity if 6+, or other notes"></textarea>
-                </div>
-                
                 <button type="submit" class="order-button">Submit Pizza Request</button>
             </form>
         </div>
@@ -569,7 +564,6 @@
                 pizzaOrders: pizzaOrders.join(', '),
                 totalQuantity: totalQuantity,
                 requestedDates: document.getElementById('requestedDates').value,
-                notes: document.getElementById('notes').value,
                 submittedAt: new Date().toISOString()
             };
             
@@ -579,36 +573,34 @@
                 return;
             }
             
-            // GOOGLE FORMS SUBMISSION
-            const GOOGLE_FORM_ACTION_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSdMclqGrYKlZjtKs7gTIFMxYyubrMQgPq3_TxU5FRYkA25KAg/formResponse';
-            
             // Format dates for better readability
             const formattedDates = orderDetails.requestedDates.split(',').map(date => {
                 const d = new Date(date);
                 return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
             }).join(', ');
             
-            // Create URL-encoded form data instead of FormData
-            const params = new URLSearchParams();
-
-// Corrected entry IDs based on your screenshot
-params.append('entry.1320462008', orderDetails.name);         // Name
-params.append('entry.1026309412', orderDetails.phone);       // Phone
-params.append('entry.281725127', orderDetails.email);        // CORRECTED Email ID
-params.append('entry.1286854769', orderDetails.pizzaOrders); // Pizza Order
-params.append('entry.1232637870', formattedDates);         // Requested Dates
-            
-            // Submit to Google Forms
-            fetch(GOOGLE_FORM_ACTION_URL, {
+            // FORMSPREE SUBMISSION - Replace YOUR_EMAIL with your actual email
+            fetch('https://formspree.io/f/YOUR_EMAIL', {
                 method: 'POST',
-                mode: 'no-cors',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    'Content-Type': 'application/json'
                 },
-                body: params.toString()
-            }).then(() => {
-                closeOrderModal();
-                alert(`Thank you ${orderDetails.name}! Your request for ${orderDetails.totalQuantity} pizza${orderDetails.totalQuantity > 1 ? 's' : ''} has been received. I'll contact you at ${orderDetails.phone} within 24 hours to confirm availability.`);
+                body: JSON.stringify({
+                    name: orderDetails.name,
+                    phone: orderDetails.phone,
+                    email: orderDetails.email,
+                    order: orderDetails.pizzaOrders,
+                    dates: formattedDates,
+                    notes: orderDetails.notes || 'None',
+                    _subject: `New Pizza Order from ${orderDetails.name}`
+                })
+            }).then(response => {
+                if (response.ok) {
+                    closeOrderModal();
+                    alert(`Thank you ${orderDetails.name}! Your request for ${orderDetails.totalQuantity} pizza${orderDetails.totalQuantity > 1 ? 's' : ''} has been received. I'll contact you at ${orderDetails.phone} within 24 hours to confirm availability.`);
+                } else {
+                    throw new Error('Form submission failed');
+                }
             }).catch((error) => {
                 console.error('Error:', error);
                 alert('There was an error submitting your request. Please try again or text us at (505) 226-4632.');
