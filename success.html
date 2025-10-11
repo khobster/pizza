@@ -4,7 +4,7 @@
 <p>We’ve saved your spot for pickup.</p>
 <div id="status">Finalizing…</div>
 <script>
-const GAS_URL='PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE';
+const GAS_URL='https://script.google.com/macros/s/AKfycbyUA5M3ZWlT6w7GmQTZC_uTaAfFbwoawqLoAgbF1VLDfZponiEDc9M4mjEQ-GLFufLd/exec';
 const sid=new URL(location.href).searchParams.get('session_id');
 (async()=>{
   if(!sid){ document.getElementById('status').textContent='Missing session id.'; return; }
