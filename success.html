@@ -4,7 +4,7 @@
 <p>We’ve saved your spot for pickup.</p>
 <div id="status">Finalizing…</div>
 <script>
-const GAS_URL='https://script.google.com/macros/s/AKfycbySnoigaB3TGgC-QqKW_v8sbTQeGP2e5Zaoaqp0PpG7C6EzadvjUqjZodVg6pgxcIfp/exec';
+const GAS_URL='https://script.google.com/macros/s/AKfycbz_dg9SuXT6n19We1l2lw5tuKiwolITeJ7N4ayei4qWHC2VG41ERO7nrZIMb2dqLhCT/exec';
 const sid=new URL(location.href).searchParams.get('session_id');
 (async()=>{
   if(!sid){ document.getElementById('status').textContent='Missing session id.'; return; }
