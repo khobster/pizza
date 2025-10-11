@@ -89,9 +89,11 @@
 
   <!-- DROP SCRIPT -->
   <script>
-  // Paste your Apps Script Web App URL here:
+  /* Use the exact /exec URL you tested in your browser */
   const GAS_URL = 'https://script.google.com/macros/s/AKfycbySnoigaB3TGgC-QqKW_v8sbTQeGP2e5Zaoaqp0PpG7C6EzadvjUqjZodVg6pgxcIfp/exec';
-  let TIP_PRICE_IDS = { tip1:'', tip2:'', tip3:'' };
+
+  /* Keep TIP IDs on window so both functions see the same object */
+  window.TIP_PRICE_IDS = { tip1:'', tip2:'', tip3:'' };
 
   async function loadDropStatus(){
     const S = document.getElementById('dropStatus');
@@ -109,7 +111,12 @@
         return;
       }
 
-      TIP_PRICE_IDS = { tip1: d.price_tip1||'', tip2: d.price_tip2||'', tip3: d.price_tip3||'' };
+      /* expose price IDs globally for startCheckout() */
+      window.TIP_PRICE_IDS = {
+        tip1: d.price_tip1 || '',
+        tip2: d.price_tip2 || '',
+        tip3: d.price_tip3 || ''
+      };
 
       W.textContent = d.pickup_window || 'today';
       if (d.soldOut){
@@ -124,48 +131,55 @@
       if (!d.variants?.pepperoni) [...topSel.options].forEach(o => o.value==='pepperoni' && (o.disabled=true));
       if (!d.variants?.cheese)    [...topSel.options].forEach(o => o.value==='cheese'    && (o.disabled=true));
 
-      if (!TIP_PRICE_IDS.tip1) document.querySelector('input[name="tip"][value="tip1"]').parentElement.style.display='none';
-      if (!TIP_PRICE_IDS.tip2) document.querySelector('input[name="tip"][value="tip2"]').parentElement.style.display='none';
-      if (!TIP_PRICE_IDS.tip3) document.querySelector('input[name="tip"][value="tip3"]').parentElement.style.display='none';
+      if (!window.TIP_PRICE_IDS.tip1) document.querySelector('input[name="tip"][value="tip1"]').parentElement.style.display='none';
+      if (!window.TIP_PRICE_IDS.tip2) document.querySelector('input[name="tip"][value="tip2"]').parentElement.style.display='none';
+      if (!window.TIP_PRICE_IDS.tip3) document.querySelector('input[name="tip"][value="tip3"]').parentElement.style.display='none';
 
       B.disabled = false; B.textContent = 'PRE-BUY NOW';
     } catch(e){
+      console.error('Status error:', e);
       S.textContent = 'Error loading drop.';
       B.disabled = true; B.textContent = 'ERROR';
+      W.textContent = '—';
     }
   }
 
   async function startCheckout(){
-  const B = document.getElementById('buyBtn');
-  const qty = Number(document.getElementById('qty').value);
-  const topping = document.getElementById('topping').value;
-  const tipKey = (document.querySelector('input[name="tip"]:checked') || {}).value || '';
-  const tip_price_id = (window.TIP_PRICE_IDS && window.TIP_PRICE_IDS[tipKey]) || '';
+    const B = document.getElementById('buyBtn');
+    const qty = Number(document.getElementById('qty').value);
+    const topping = document.getElementById('topping').value;
+    const tipKey = (document.querySelector('input[name="tip"]:checked') || {}).value || '';
+    const tip_price_id = (window.TIP_PRICE_IDS && window.TIP_PRICE_IDS[tipKey]) ? window.TIP_PRICE_IDS[tipKey] : '';
 
-  B.disabled = true; B.textContent = 'Redirecting…';
-  try{
-    const r = await fetch(GAS_URL+'?route=create', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        quantity: String(qty),
-        topping,
-        tip_price_id
-      })
-    });
-    const d = await r.json();
-    if (d.ok && d.url){
-      window.location = d.url;
-    } else {
-      alert('Sold out or not enough remaining.');
-      await loadDropStatus();
+    B.disabled = true; B.textContent = 'Redirecting…';
+    try{
+      const r = await fetch(GAS_URL+'?route=create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, // simple POST = no preflight
+        body: new URLSearchParams({
+          quantity: String(qty),
+          topping,
+          tip_price_id
+        })
+      });
+      const d = await r.json();
+      if (d.ok && d.url){
+        window.location = d.url; // Stripe Checkout
+      } else {
+        alert('Sold out or not enough remaining.');
+        await loadDropStatus();
+        B.disabled = false; B.textContent = 'PRE-BUY NOW';
+      }
+    } catch(e){
+      console.error('Create error:', e);
+      alert('Checkout error. Please refresh and try again.');
       B.disabled = false; B.textContent = 'PRE-BUY NOW';
     }
-  } catch(e){
-    alert('Checkout error. Please refresh and try again.');
-    B.disabled = false; B.textContent = 'PRE-BUY NOW';
   }
-}
-</script>
+
+  /* wire up + kick off */
+  document.getElementById('buyBtn').addEventListener('click', startCheckout);
+  loadDropStatus();
+  </script>
 </body>
 </html>
