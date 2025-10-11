@@ -136,35 +136,36 @@
   }
 
   async function startCheckout(){
-    const B = document.getElementById('buyBtn');
-    const qty = Number(document.getElementById('qty').value);
-    const topping = document.getElementById('topping').value;
-    const tipKey = (document.querySelector('input[name="tip"]:checked') || {}).value || '';
-    const tip_price_id = TIP_PRICE_IDS[tipKey] || '';
+  const B = document.getElementById('buyBtn');
+  const qty = Number(document.getElementById('qty').value);
+  const topping = document.getElementById('topping').value;
+  const tipKey = (document.querySelector('input[name="tip"]:checked') || {}).value || '';
+  const tip_price_id = (window.TIP_PRICE_IDS && window.TIP_PRICE_IDS[tipKey]) || '';
 
-    B.disabled = true; B.textContent = 'Redirecting…';
-    try{
-      const r = await fetch(GAS_URL+'?route=create', {
-        method:'POST',
-        headers:{ 'Content-Type':'application/json' },
-        body: JSON.stringify({ quantity: qty, topping, tip_price_id })
-      });
-      const d = await r.json();
-      if (d.ok && d.url){
-        window.location = d.url;
-      } else {
-        alert('Sold out or not enough remaining.');
-        await loadDropStatus();
-        B.disabled = false; B.textContent = 'PRE-BUY NOW';
-      }
-    } catch(e){
-      alert('Checkout error. Please refresh and try again.');
+  B.disabled = true; B.textContent = 'Redirecting…';
+  try{
+    const r = await fetch(GAS_URL+'?route=create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        quantity: String(qty),
+        topping,
+        tip_price_id
+      })
+    });
+    const d = await r.json();
+    if (d.ok && d.url){
+      window.location = d.url;
+    } else {
+      alert('Sold out or not enough remaining.');
+      await loadDropStatus();
       B.disabled = false; B.textContent = 'PRE-BUY NOW';
     }
+  } catch(e){
+    alert('Checkout error. Please refresh and try again.');
+    B.disabled = false; B.textContent = 'PRE-BUY NOW';
   }
-
-  document.getElementById('buyBtn').addEventListener('click', startCheckout);
-  loadDropStatus();
-  </script>
+}
+</script>
 </body>
 </html>
