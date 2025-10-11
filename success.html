@@ -1,0 +1,17 @@
+<!doctype html><meta charset="utf-8"><title>Order Confirmed</title>
+<style>body{font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial;padding:2rem;max-width:600px;margin:auto}</style>
+<h1>Thanks! Your order is confirmed.</h1>
+<p>We’ve saved your spot for pickup.</p>
+<div id="status">Finalizing…</div>
+<script>
+const GAS_URL='PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE';
+const sid=new URL(location.href).searchParams.get('session_id');
+(async()=>{
+  if(!sid){ document.getElementById('status').textContent='Missing session id.'; return; }
+  try{
+    const r=await fetch(GAS_URL+'?route=confirm&session_id='+encodeURIComponent(sid));
+    const d=await r.json();
+    document.getElementById('status').textContent = d.ok ? 'You’re all set. See you at pickup!' : 'We’ll text you—something needs attention.';
+  }catch(_){ document.getElementById('status').textContent='Could not finalize automatically. We’ll sort it out.'; }
+})();
+</script>
