@@ -2,184 +2,234 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Caro's Pizzeria</title>
   <link rel="icon" type="image/png" href="favicon.png" />
   <style>
-    :root { --primary-red:#E31837; --dark-red:#C41230; --warm-brown:#8B4513; --cream:#FFF8E7; }
-    *{margin:0;padding:0;box-sizing:border-box;font-family:Georgia,serif}
-    body{line-height:1.6;background:var(--cream);overflow-x:hidden}
-    .header{ text-align:center; padding:3rem 1rem; background:#fff; max-width:1200px; margin:0 auto; box-shadow:0 2px 4px rgba(0,0,0,.1); }
-    .logo{ max-width:400px; margin:2rem auto; display:block; }
-    .tagline{ font-style:italic; color:var(--warm-brown); font-size:1.1rem; margin-bottom:1rem; }
-    .phone-option{ display:inline-flex; align-items:center; gap:.5rem; font-weight:bold; padding:.5rem 1rem; border-radius:5px; text-decoration:none; border:2px solid var(--primary-red); color:var(--primary-red); font-size:1.1rem; transition:all .3s }
-    .phone-option:hover{ background:var(--primary-red); color:#fff }
-    .phone-option.secondary{ border-color:#ddd; color:#999; font-size:.9rem; padding:.4rem .8rem }
-    .phone-option.secondary:hover{ background:#666; color:#fff }
-    .order-button{ display:inline-block; background:var(--primary-red); color:#fff; border:none; padding:1rem 2rem; border-radius:5px; font-size:1.2rem; font-weight:bold; cursor:pointer; transition:all .3s; box-shadow:0 4px 6px rgba(227,24,55,.3) }
-    .order-button:hover{ background:var(--dark-red); transform:translateY(-2px); box-shadow:0 6px 12px rgba(227,24,55,.4) }
-    .info-section{ max-width:800px; margin:2rem auto; padding:2rem; background:#fff; border-radius:5px; box-shadow:0 2px 4px rgba(0,0,0,.1) }
-    .info-section h2{ color:var(--dark-red); margin-bottom:1rem; text-align:center }
-    .menu-item{ margin:1rem 0; padding:1rem; background:var(--cream); border-radius:5px }
-    .menu-item h3{ color:var(--warm-brown); margin-bottom:.5rem }
-    .process-info{ font-style:italic; color:#666; text-align:center; margin:1rem 0 }
-    footer{ text-align:center; padding:2rem; background:#333; color:#fff; margin-top:3rem }
-    @media(max-width:600px){ .logo{ max-width:90%; margin:1rem auto } }
+    :root { --primary-red:#E31837; --dark-red:#C41230; --warm-brown:#7A4A2E; --cream:#FFF8E7; }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:Georgia,serif;line-height:1.6;background:var(--cream);color:#222}
+    .shell{max-width:1000px;margin:0 auto;padding:0 1rem}
+    .header{padding:2rem 0 1rem;text-align:center}
+    .logo{max-width:420px;width:90%;margin:1rem auto;display:block}
+    .tagline{color:#7a5b45;font-style:italic}
+
+    /* DROP CARD (hero) */
+    #drop{background:#fff; border-radius:10px; box-shadow:0 6px 20px rgba(0,0,0,.08);
+          padding:1.2rem; margin:1rem auto 2rem; position:sticky; top:0; z-index:10}
+    #drop h2{color:var(--dark-red); text-align:center; font-size:1.3rem; margin-bottom:.3rem}
+    .process-info{color:#666; text-align:center; font-size:.95rem; margin:.25rem 0 .75rem}
+    .row{display:flex; gap:.5rem; align-items:center; flex-wrap:wrap}
+    select{padding:.55rem .6rem; border:1px solid #ddd; border-radius:6px; background:#fff}
+    .muted{font-size:.9rem; color:#666}
+    .order-button{background:var(--primary-red); color:#fff; border:none; padding:.9rem 1.3rem;
+      border-radius:6px; font-weight:700; cursor:pointer; box-shadow:0 6px 14px rgba(227,24,55,.25);
+      transition:.2s; }
+    .order-button[disabled]{opacity:.6; cursor:not-allowed}
+    .order-button:hover{background:var(--dark-red); transform:translateY(-1px)}
+
+    /* INFO SECTIONS */
+    .section{background:#fff; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,.06);
+             padding:1.2rem; margin:0 auto 1.2rem}
+    .section h3{color:var(--dark-red); text-align:center; margin-bottom:.5rem}
+    .menu-item{background:var(--cream); border-radius:8px; padding:1rem; margin:.5rem 0}
+
+    /* Footer + contacts */
+    .contacts{display:flex; gap:.75rem; justify-content:center; flex-wrap:wrap; margin-top:.8rem}
+    .btn-secondary{display:inline-flex; align-items:center; gap:.4rem; padding:.5rem .9rem;
+      border:2px solid #bbb; border-radius:6px; color:#666; text-decoration:none; font-weight:600}
+    .btn-secondary:hover{background:#666; color:#fff}
+
+    @media (max-width:640px){
+      .order-button{flex:1}
+      #drop{margin:0 .25rem 1rem}
+    }
   </style>
 </head>
 <body>
-  <header class="header">
-    <img src="carospizzerialogo.png" alt="Caro's Pizza" class="logo" />
-    <div class="tagline">Home of the original South Carolina-style pizza pie.</div>
-    <div class="contact-options" style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin:1rem 0;">
-      <a href="sms:5052264632?body=Hi!%20I'd%20like%20to%20order%20a%20pizza." class="phone-option secondary">💬 Text</a>
-      <a href="tel:5052264632" class="phone-option secondary">📞 Call</a>
-    </div>
-  </header>
+  <div class="shell">
+    <header class="header">
+      <img src="carospizzerialogo.png" class="logo" alt="Caro’s Pizzeria">
+      <div class="tagline">South Carolina–style pizza. Slow-fermented dough, baked in a Marsal deck.</div>
+    </header>
 
-  <!-- DROP (LIVE PURCHASE) -->
-  <div class="info-section" id="drop">
-    <h2>🔥 Today’s Pizza Drop</h2>
-    <p class="process-info">Pre-purchase now. Pickup <span id="pickupWindow">—</span>. Limited pies; when they’re gone, they’re gone.</p>
+    <!-- HERO: Today’s Drop -->
+    <div id="drop" class="section">
+      <h2>🔥 Today’s Pizza Drop</h2>
+      <p class="process-info">
+        Pre-purchase now. Pickup <span id="pickupWindow">—</span>. Limited pies; when they’re gone, they’re gone.
+      </p>
 
-    <div id="dropStatus" style="text-align:center;margin:.5rem 0 1rem;">Checking availability…</div>
+      <div id="dropStatus" class="muted" style="text-align:center;margin:.25rem 0 .7rem">Checking availability…</div>
 
-    <div class="menu-item" style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;">
-      <!-- Rename labels here anytime -->
-      <select id="topping" style="padding:.5rem;border:1px solid #ddd;border-radius:4px;">
-        <option value="cheese">Grandma Gigi Style Plain</option>
-        <option value="pepperoni">Pepperoni</option>
-      </select>
-      <select id="qty" style="padding:.5rem;border:1px solid #ddd;border-radius:4px;">
-        <option>1</option><option>2</option><option>3</option><option>4</option>
-      </select>
+      <div class="row">
+        <!-- Topping -->
+        <select id="topping" aria-label="Choose topping">
+          <option value="cheese">Grandma Gigi Style Plain</option>
+          <option value="pepperoni">Pepperoni</option>
+        </select>
 
-      <!-- Tip choices -->
-      <div id="tips" style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin-left:auto;">
-        <span style="color:#666;">Tip:</span>
-        <label><input type="radio" name="tip" value="" checked> None</label>
-        <label><input type="radio" name="tip" value="tip1">$1</label>
-        <label><input type="radio" name="tip" value="tip2">$2</label>
-        <label><input type="radio" name="tip" value="tip3">$3</label>
+        <!-- Qty -->
+        <select id="qty" aria-label="Quantity">
+          <option>1</option><option>2</option><option>3</option><option>4</option>
+        </select>
+
+        <!-- Slot -->
+        <select id="slot" aria-label="Pickup time">
+          <option value="">Select time</option>
+        </select>
+
+        <!-- Tips -->
+        <div id="tips" class="row" style="margin-left:auto">
+          <span class="muted">Tip:</span>
+          <label><input type="radio" name="tip" value="" checked> None</label>
+          <label><input type="radio" name="tip" value="tip1">$1</label>
+          <label><input type="radio" name="tip" value="tip2">$2</label>
+          <label><input type="radio" name="tip" value="tip3">$3</label>
+        </div>
+
+        <button id="buyBtn" class="order-button" disabled>Loading…</button>
       </div>
 
-      <button class="order-button" id="buyBtn" disabled>Loading…</button>
+      <div class="muted" style="margin-top:.6rem">Pay with card, Apple Pay, or Google Pay. Tax added at checkout.</div>
     </div>
-    <div style="font-size:.9rem;color:#666;margin-top:.5rem;">Pay with card, Apple Pay, or Google Pay.</div>
+
+    <!-- Menu / Story -->
+    <div class="section">
+      <h3>Our Pies</h3>
+      <p class="process-info">Inspired by NY/NJ crunch and Chicago caramelized edge — finished with Lowcountry attitude.</p>
+
+      <div class="menu-item">
+        <strong>Grandma Gigi Style Plain</strong>
+        <p>Jersey tomatoes in our secret sauce, mozzarella — an ode to grandma-style with a South Carolina twist.</p>
+      </div>
+      <div class="menu-item">
+        <strong>Pepperoni</strong>
+        <p>Everything in the Plain, plus crispy cupped pepperoni.</p>
+      </div>
+
+      <div class="contacts">
+        <a href="sms:5052264632?body=Hi!%20I'd%20like%20to%20order%20a%20pizza." class="btn-secondary">💬 Text</a>
+        <a href="tel:5052264632" class="btn-secondary">📞 Call</a>
+      </div>
+    </div>
+
+    <footer class="section" style="text-align:center">
+      <small>© 2025 Caro’s Pizzeria. Made with love.</small>
+    </footer>
   </div>
 
-  <!-- MENU / INFO -->
-  <div class="info-section">
-    <h2>Our Pies</h2>
-    <p class="process-info">All from scratch and made to order with a dough that takes days to craft.</p>
-
-    <div class="menu-item">
-      <h3>Grandma Gigi Style Plain</h3>
-      <p>Jersey tomatoes in the secret recipe sauce, mozzarella, an ode to the grandma-style pie but with a whole different spin.</p>
-    </div>
-    <div class="menu-item">
-      <h3>Pepperoni</h3>
-      <p>The Grandma Gigi with crispy pepperoni on top.</p>
-    </div>
-  </div>
-
-  <footer>
-    <p>&copy; 2025 Caro’s Pizzeria. Made with love.</p>
-  </footer>
-
-  <!-- DROP SCRIPT -->
   <script>
-  /* Use the exact /exec URL you tested in your browser */
-  const GAS_URL = 'https://script.google.com/macros/s/AKfycbz_dg9SuXT6n19We1l2lw5tuKiwolITeJ7N4ayei4qWHC2VG41ERO7nrZIMb2dqLhCT/exec';
+    // Your published Apps Script URL:
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbz_dg9SuXT6n19We1l2lw5tuKiwolITeJ7N4ayei4qWHC2VG41ERO7nrZIMb2dqLhCT/exec';
+    let TIP_PRICE_IDS = { tip1:'', tip2:'', tip3:'' };
 
-  /* Keep TIP IDs on window so both functions see the same object */
-  window.TIP_PRICE_IDS = { tip1:'', tip2:'', tip3:'' };
-
-  async function loadDropStatus(){
-    const S = document.getElementById('dropStatus');
-    const B = document.getElementById('buyBtn');
-    const W = document.getElementById('pickupWindow');
-
-    try{
-      const r = await fetch(GAS_URL+'?route=status');
-      const d = await r.json();
-
-      if (!d.ok || !d.active){
-        S.textContent = 'No drop today.';
-        B.disabled = true; B.textContent = 'UNAVAILABLE';
-        W.textContent = '—';
-        return;
-      }
-
-      /* expose price IDs globally for startCheckout() */
-      window.TIP_PRICE_IDS = {
-        tip1: d.price_tip1 || '',
-        tip2: d.price_tip2 || '',
-        tip3: d.price_tip3 || ''
-      };
-
-      W.textContent = d.pickup_window || 'today';
-      if (d.soldOut){
-        S.innerHTML = `Sold out for ${d.date_iso} (${d.pickup_window}).`;
-        B.disabled = true; B.textContent = 'SOLD OUT';
-        return;
-      }
-
-      S.innerHTML = `${d.remaining} left for ${d.date_iso} (${d.pickup_window}).`;
-
-      const topSel = document.getElementById('topping');
-      if (!d.variants?.pepperoni) [...topSel.options].forEach(o => o.value==='pepperoni' && (o.disabled=true));
-      if (!d.variants?.cheese)    [...topSel.options].forEach(o => o.value==='cheese'    && (o.disabled=true));
-
-      if (!window.TIP_PRICE_IDS.tip1) document.querySelector('input[name="tip"][value="tip1"]').parentElement.style.display='none';
-      if (!window.TIP_PRICE_IDS.tip2) document.querySelector('input[name="tip"][value="tip2"]').parentElement.style.display='none';
-      if (!window.TIP_PRICE_IDS.tip3) document.querySelector('input[name="tip"][value="tip3"]').parentElement.style.display='none';
-
-      B.disabled = false; B.textContent = 'PRE-BUY NOW';
-    } catch(e){
-      console.error('Status error:', e);
-      S.textContent = 'Error loading drop.';
-      B.disabled = true; B.textContent = 'ERROR';
-      W.textContent = '—';
+    function parseTime12h_(s){
+      const m = s.trim().match(/^(\d{1,2}):(\d{2})\s*([ap]m)$/i);
+      if(!m) return null;
+      let h = Number(m[1]) % 12; if (m[3].toLowerCase()==='pm') h += 12;
+      const d = new Date(); d.setHours(h, Number(m[2]), 0, 0); return d;
     }
-  }
+    function populateSlotsFromWindow(winStr, stepMinutes=15){
+      const sel = document.getElementById('slot');
+      sel.innerHTML = '<option value="">Select time</option>';
+      const parts = (winStr||'').split('-'); if (parts.length!==2) return;
+      const start = parseTime12h_(parts[0]); const end = parseTime12h_(parts[1]); if(!start || !end) return;
+      const d = new Date(start);
+      while (d < end){
+        const e = new Date(d.getTime() + stepMinutes*60000);
+        const label = d.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'}) + '–' +
+                      e.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
+        const opt = document.createElement('option'); opt.value = label; opt.textContent = label;
+        sel.appendChild(opt); d.setTime(e.getTime());
+      }
+    }
 
-  async function startCheckout(){
-    const B = document.getElementById('buyBtn');
-    const qty = Number(document.getElementById('qty').value);
-    const topping = document.getElementById('topping').value;
-    const tipKey = (document.querySelector('input[name="tip"]:checked') || {}).value || '';
-    const tip_price_id = (window.TIP_PRICE_IDS && window.TIP_PRICE_IDS[tipKey]) ? window.TIP_PRICE_IDS[tipKey] : '';
+    async function loadDropStatus(){
+      const S = document.getElementById('dropStatus');
+      const B = document.getElementById('buyBtn');
+      const W = document.getElementById('pickupWindow');
 
-    B.disabled = true; B.textContent = 'Redirecting…';
-    try{
-      const r = await fetch(GAS_URL+'?route=create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, // simple POST = no preflight
-        body: new URLSearchParams({
-          quantity: String(qty),
-          topping,
-          tip_price_id
-        })
-      });
-      const d = await r.json();
-      if (d.ok && d.url){
-        window.location = d.url; // Stripe Checkout
-      } else {
-        alert('Sold out or not enough remaining.');
-        await loadDropStatus();
+      try{
+        const r = await fetch(GAS_URL+'?route=status');
+        const d = await r.json();
+
+        if (!d.ok || !d.active){
+          S.textContent = 'No drop today.'; B.disabled = true; B.textContent = 'UNAVAILABLE'; W.textContent = '—'; return;
+        }
+
+        TIP_PRICE_IDS = { tip1:d.price_tip1||'', tip2:d.price_tip2||'', tip3:d.price_tip3||'' };
+        W.textContent = d.pickup_window || 'today';
+        populateSlotsFromWindow(d.pickup_window, 15);
+
+        // Hide tips with no price id
+        if (!TIP_PRICE_IDS.tip1) document.querySelector('input[name="tip"][value="tip1"]').parentElement.style.display='none';
+        if (!TIP_PRICE_IDS.tip2) document.querySelector('input[name="tip"][value="tip2"]').parentElement.style.display='none';
+        if (!TIP_PRICE_IDS.tip3) document.querySelector('input[name="tip"][value="tip3"]').parentElement.style.display='none';
+
+        // Remaining
+        if (d.soldOut){
+          S.textContent = `Sold out for ${d.date_iso} (${d.pickup_window}).`; B.disabled = true; B.textContent = 'SOLD OUT'; return;
+        }
+        S.textContent = `${d.remaining} left for ${d.date_iso} (${d.pickup_window}).`;
+
+        // Cap qty by remaining
+        const qtySel = document.getElementById('qty');
+        [...qtySel.options].forEach(opt => { opt.disabled = Number(opt.value) > d.remaining; });
+        qtySel.value = Math.min(Number(qtySel.value), d.remaining || 1);
+
+        // Disable toppings per variants
+        const topSel = document.getElementById('topping');
+        if (!d.variants?.pepperoni) [...topSel.options].forEach(o => o.value==='pepperoni' && (o.disabled=true));
+        if (!d.variants?.cheese)    [...topSel.options].forEach(o => o.value==='cheese'    && (o.disabled=true));
+
+        B.disabled = false; B.textContent = 'PRE-BUY NOW';
+      } catch(e){
+        S.textContent = 'Error loading drop.'; B.disabled = true; B.textContent = 'ERROR';
+      }
+    }
+
+    async function startCheckout(){
+      const B = document.getElementById('buyBtn');
+      const qty = Number(document.getElementById('qty').value);
+      const topping = document.getElementById('topping').value;
+      const pickup_slot = document.getElementById('slot').value || '';
+      if (!pickup_slot){ alert('Please choose a pickup time.'); return; }
+
+      const tipKey = (document.querySelector('input[name="tip"]:checked') || {}).value || '';
+      const tip_price_id = (window.TIP_PRICE_IDS && window.TIP_PRICE_IDS[tipKey]) || '';
+
+      B.disabled = true; B.textContent = 'Redirecting…';
+      try{
+        const r = await fetch(GAS_URL+'?route=create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({ quantity:String(qty), topping, tip_price_id, pickup_slot })
+        });
+        const d = await r.json();
+        if (d.ok && d.url){ window.location = d.url; }
+        else{
+          if (d.error === 'SOLD_OUT_OR_SHORT'){
+            const rem = Number(d.remaining ?? 0);
+            if (rem > 0){
+              const qtySel = document.getElementById('qty');
+              [...qtySel.options].forEach(opt => { opt.disabled = Number(opt.value) > rem; });
+              qtySel.value = Math.min(Number(qtySel.value), rem);
+              alert(`Only ${rem} left today. Quantity adjusted.`);
+            } else { alert('Looks like it just sold out.'); }
+          } else { alert(d.message || d.error || 'Could not start checkout.'); }
+          await loadDropStatus();
+          B.disabled = false; B.textContent = 'PRE-BUY NOW';
+        }
+      } catch(e){
+        alert('Checkout error. Please refresh and try again.');
         B.disabled = false; B.textContent = 'PRE-BUY NOW';
       }
-    } catch(e){
-      console.error('Create error:', e);
-      alert('Checkout error. Please refresh and try again.');
-      B.disabled = false; B.textContent = 'PRE-BUY NOW';
     }
-  }
 
-  /* wire up + kick off */
-  document.getElementById('buyBtn').addEventListener('click', startCheckout);
-  loadDropStatus();
+    document.getElementById('buyBtn').addEventListener('click', startCheckout);
+    loadDropStatus();
+    setInterval(loadDropStatus, 30000); // keep remaining fresh
   </script>
 </body>
 </html>
