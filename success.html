@@ -3,32 +3,56 @@
 <title>Order Confirmed • Caro’s Pizzeria</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-  :root{ --green:#0a7a33; --ink:#1f2937; }
+  :root{ --green:#0a7a33; --ink:#1f2937; --muted:#6b7280; --ring:#e5e7eb; --pill:#fff7ed; }
   body{ font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Arial; color:var(--ink);
-        padding:2rem; max-width:680px; margin:auto; }
-  .card{ border:1px solid #eee; border-radius:10px; padding:1rem 1.2rem; background:#fff; }
-  h1{ margin:.2rem 0 1rem; font-size:1.6rem }
+        padding:2rem; max-width:720px; margin:auto; background:#fff }
+  .card{ border:1px solid #eee; border-radius:12px; padding:1.2rem 1.25rem; background:#fff; }
+  h1{ margin:.2rem 0 1rem; font-size:1.7rem }
   .ok{ color:var(--green); font-weight:700 }
-  .muted{ color:#6b7280; font-size:.95rem }
-  .kv{ display:flex; justify-content:space-between; gap:1rem; padding:.45rem 0; border-bottom:1px dashed #eee }
+  .muted{ color:var(--muted); font-size:.95rem }
+
+  /* Big pickup time pill */
+  .pill{
+    display:flex; align-items:center; justify-content:space-between; gap:.8rem;
+    background:var(--pill); border:1px solid var(--ring); border-radius:14px;
+    padding:.9rem 1rem; margin:.6rem 0 1rem;
+  }
+  .pill .when{ font-weight:800; font-size:1.1rem }
+  .pill .slot{ font-weight:800; font-size:1.15rem }
+  .badge{ display:inline-block; padding:.25rem .5rem; border-radius:999px; background:#eef2ff; color:#3730a3; font-weight:700; font-size:.8rem }
+
+  .kv{ display:flex; justify-content:space-between; gap:1rem; padding:.55rem 0; border-bottom:1px dashed #eee }
   .kv:last-child{ border-bottom:none }
   .actions{ margin-top:1rem; display:flex; gap:.6rem; flex-wrap:wrap }
-  a.btn{ display:inline-block; padding:.55rem .8rem; border-radius:8px; text-decoration:none;
+  a.btn{ display:inline-block; padding:.6rem .9rem; border-radius:10px; text-decoration:none;
          border:2px solid #ddd; color:#374151; font-weight:600 }
   a.btn:hover{ background:#374151; color:#fff }
+
+  @media (max-width:560px){
+    .pill{ flex-direction:column; align-items:flex-start }
+  }
 </style>
 
 <h1>Thanks! Your order is confirmed.</h1>
-<p class="muted">We’ve saved your spot for pickup. You’ll also get an email receipt from Stripe. <em>Sales tax was added at checkout.</em></p>
+<p class="muted">You’ll also get an email receipt from Stripe. <em>Sales tax was added at checkout.</em></p>
 
 <div id="card" class="card">
   <div id="status" class="ok">Finalizing…</div>
-  <div id="summary" style="margin-top:.6rem; display:none">
+
+  <!-- Prominent pickup time -->
+  <div id="pickupPill" class="pill" style="display:none">
+    <div class="when" id="whenLabel">—</div>
+    <div class="slot" id="slotLabel">—</div>
+  </div>
+
+  <!-- Details -->
+  <div id="summary" style="display:none">
     <div class="kv"><div>Date</div><div id="date">—</div></div>
     <div class="kv"><div>Pickup window</div><div id="window">—</div></div>
     <div class="kv"><div>Your slot</div><div id="slot">—</div></div>
     <div class="kv"><div>Order</div><div id="order">—</div></div>
   </div>
+
   <div class="actions">
     <a class="btn" href="/">← Back to Caro’s Pizzeria</a>
   </div>
@@ -42,37 +66,55 @@
 const GAS_URL='https://script.google.com/macros/s/AKfycbz_dg9SuXT6n19We1l2lw5tuKiwolITeJ7N4ayei4qWHC2VG41ERO7nrZIMb2dqLhCT/exec';
 const sid=new URL(location.href).searchParams.get('session_id');
 
-(async()=>{
+function isTodayISO(iso){
+  const t=new Date(), y=t.getFullYear(), m=String(t.getMonth()+1).padStart(2,'0'), d=String(t.getDate()).padStart(2,'0');
+  return iso === `${y}-${m}-${d}`;
+}
+
+(function(){
   const S = document.getElementById('status');
   const SUM = document.getElementById('summary');
+  const PILL = document.getElementById('pickupPill');
+  const whenLabel = document.getElementById('whenLabel');
+  const slotLabel = document.getElementById('slotLabel');
+
   if(!sid){ S.textContent='Missing session id.'; return; }
 
-  try{
-    const r = await fetch(GAS_URL+'?route=confirm&session_id='+encodeURIComponent(sid));
-    const d = await r.json();
+  fetch(GAS_URL+'?route=confirm&session_id='+encodeURIComponent(sid))
+  .then(r=>r.json())
+  .then(d=>{
     if (d && d.ok){
       S.textContent = d.finalized ? 'You’re all set. See you at pickup!' : 'We’ll text you—something needs attention.';
-      if (d.date_iso || d.pickup_window || d.slot || d.qty || d.topping){
-        // Show summary
-        const isToday = (function(){
-          const t = new Date(), y=t.getFullYear(), m=String(t.getMonth()+1).padStart(2,'0'), dd=String(t.getDate()).padStart(2,'0');
-          return `${y}-${m}-${dd}` === d.date_iso;
-        })();
-        document.getElementById('date').textContent = isToday
-          ? 'Today'
-          : new Date(d.date_iso+'T00:00:00').toLocaleDateString([], {weekday:'short', month:'short', day:'numeric'});
+
+      const hasDetails = (d.date_iso || d.pickup_window || d.slot || d.qty || d.topping);
+      if (hasDetails){
+        const isToday = d.date_iso ? isTodayISO(d.date_iso) : false;
+        const dateHuman = d.date_iso
+          ? (isToday ? 'Today' : new Date(d.date_iso+'T00:00:00').toLocaleDateString([], {weekday:'short', month:'short', day:'numeric'}))
+          : '—';
+
+        // Big pill
+        whenLabel.textContent = dateHuman;
+        slotLabel.textContent = d.slot || d.pickup_window || '—';
+        PILL.style.display = 'flex';
+
+        // Table details
+        document.getElementById('date').textContent = dateHuman;
         document.getElementById('window').textContent = d.pickup_window || '—';
         document.getElementById('slot').textContent = d.slot || '—';
+
         const name = d.topping ? (d.topping === 'pepperoni' ? 'Beebop Style Pepperoni' : 'Gigi Style Cheese Pie') : '';
         const line = (d.qty ? d.qty + ' × ' : '') + (name || 'Pizza');
         document.getElementById('order').textContent = line || '—';
+
         SUM.style.display = 'block';
       }
     } else {
       S.textContent = 'We’ll text you—something needs attention.';
     }
-  }catch(_){
+  })
+  .catch(_=>{
     S.textContent='Could not finalize automatically. We’ll sort it out.';
-  }
+  });
 })();
 </script>
