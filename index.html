@@ -20,8 +20,19 @@
     #dropStatus{ text-align:center; margin:.25rem 0 .75rem; font-size:1.05rem }
     #dropStatus strong{ font-size:1.2rem }
     .muted{color:#6b7280}
-    .row{display:flex; gap:.5rem; align-items:center; flex-wrap:wrap}
-    select{padding:.6rem .7rem; border:1px solid #ddd; border-radius:8px; background:#fff}
+
+    /* Row & controls */
+    .row{display:flex; gap:.75rem; align-items:center; flex-wrap:wrap}
+    .control{display:flex; align-items:center; gap:.45rem; flex:1; min-width:210px}
+    .chip{
+      font-size:.85rem; line-height:1; color:#374151; background:#f5f5f5;
+      border:1px solid #e5e7eb; padding:.35rem .5rem; border-radius:999px; white-space:nowrap
+    }
+    select{
+      flex:1; font-size:1.1rem; min-height:48px; padding:.9rem 1rem;
+      border:1px solid #ddd; border-radius:10px; background:#fff
+    }
+
     .order-button{
       background:var(--primary-red); color:#fff; border:none; padding:1rem 1.25rem;
       border-radius:8px; font-weight:800; cursor:pointer; box-shadow:0 6px 14px rgba(227,24,55,.25);
@@ -45,27 +56,12 @@
 
     @media (max-width:640px){
       #drop{margin:0 .25rem 1rem}
-    }
-
-    /* === Touch-friendly controls (mobile & desktop) === */
-    select,
-    #buyBtn.order-button {
-      font-size: 1.1rem;
-      min-height: 48px;        /* bigger tap target */
-      padding: 0.9rem 1rem;    /* larger touch padding */
-      border-radius: 10px;     /* slightly rounder */
-      -webkit-tap-highlight-color: rgba(0,0,0,0);
-      touch-action: manipulation;
-    }
-    #drop .row { gap: .75rem; }
-
-    /* Stack controls full-width on small screens */
-    @media (max-width: 640px){
-      #drop .row { flex-direction: column; align-items: stretch; }
-      #drop .row > select { width: 100%; }
-      #buyBtn.order-button { font-size: 1.15rem; }
-      #drop h2 { font-size: 1.5rem; }
-      #dropStatus { font-size: 1.1rem; }
+      #drop .row { flex-direction:column; align-items:stretch }
+      .control{min-width:0; width:100%}
+      select{width:100%}
+      #buyBtn.order-button { font-size:1.15rem }
+      #drop h2 { font-size:1.5rem }
+      #dropStatus { font-size:1.1rem }
     }
   </style>
 </head>
@@ -80,22 +76,31 @@
       <h2>🔥 Today’s Pizza Drop</h2>
       <div id="dropStatus" class="muted">Checking availability…</div>
 
-      <div class="row" style="gap:.5rem;margin:.25rem 0 .5rem">
-        <!-- Topping -->
-        <select id="topping" aria-label="Choose pie">
-          <option value="cheese">Gigi Style Cheese Pie</option>
-          <option value="pepperoni">Beebop Style Pepperoni</option>
-        </select>
+      <div class="row" style="margin:.25rem 0 .6rem">
+        <!-- Pie -->
+        <div class="control">
+          <span class="chip">🍕 Pie</span>
+          <select id="topping" aria-label="Choose pie" title="Choose your pie">
+            <option value="cheese">Gigi Style Cheese Pie</option>
+            <option value="pepperoni">Beebop Style Pepperoni</option>
+          </select>
+        </div>
 
         <!-- Qty -->
-        <select id="qty" aria-label="Quantity">
-          <option>1</option><option>2</option><option>3</option><option>4</option>
-        </select>
+        <div class="control" style="max-width:260px">
+          <span class="chip">🔢 Qty</span>
+          <select id="qty" aria-label="Quantity" title="How many pies?">
+            <option>1</option><option>2</option><option>3</option><option>4</option>
+          </select>
+        </div>
 
-        <!-- Slot -->
-        <select id="slot" aria-label="Pickup time">
-          <option value="">Select time</option>
-        </select>
+        <!-- Time -->
+        <div class="control">
+          <span class="chip">🕒 Time</span>
+          <select id="slot" aria-label="Pickup time" title="Choose a pickup time">
+            <option value="">Select time</option>
+          </select>
+        </div>
       </div>
 
       <button id="buyBtn" class="order-button" disabled>GET YOUR PIE</button>
@@ -104,7 +109,7 @@
       </div>
     </div>
 
-    <!-- Menu / Story -->
+    <!-- Menu -->
     <div class="section">
       <h3>Our Pies</h3>
 
