@@ -1,17 +1,78 @@
-<!doctype html><meta charset="utf-8"><title>Order Confirmed</title>
-<style>body{font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial;padding:2rem;max-width:600px;margin:auto}</style>
+<!doctype html>
+<meta charset="utf-8">
+<title>Order Confirmed • Caro’s Pizzeria</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{ --green:#0a7a33; --ink:#1f2937; }
+  body{ font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Arial; color:var(--ink);
+        padding:2rem; max-width:680px; margin:auto; }
+  .card{ border:1px solid #eee; border-radius:10px; padding:1rem 1.2rem; background:#fff; }
+  h1{ margin:.2rem 0 1rem; font-size:1.6rem }
+  .ok{ color:var(--green); font-weight:700 }
+  .muted{ color:#6b7280; font-size:.95rem }
+  .kv{ display:flex; justify-content:space-between; gap:1rem; padding:.45rem 0; border-bottom:1px dashed #eee }
+  .kv:last-child{ border-bottom:none }
+  .actions{ margin-top:1rem; display:flex; gap:.6rem; flex-wrap:wrap }
+  a.btn{ display:inline-block; padding:.55rem .8rem; border-radius:8px; text-decoration:none;
+         border:2px solid #ddd; color:#374151; font-weight:600 }
+  a.btn:hover{ background:#374151; color:#fff }
+</style>
+
 <h1>Thanks! Your order is confirmed.</h1>
-<p>We’ve saved your spot for pickup.</p>
-<div id="status">Finalizing…</div>
+<p class="muted">We’ve saved your spot for pickup. You’ll also get an email receipt from Stripe. <em>Sales tax was added at checkout.</em></p>
+
+<div id="card" class="card">
+  <div id="status" class="ok">Finalizing…</div>
+  <div id="summary" style="margin-top:.6rem; display:none">
+    <div class="kv"><div>Date</div><div id="date">—</div></div>
+    <div class="kv"><div>Pickup window</div><div id="window">—</div></div>
+    <div class="kv"><div>Your slot</div><div id="slot">—</div></div>
+    <div class="kv"><div>Order</div><div id="order">—</div></div>
+  </div>
+  <div class="actions">
+    <a class="btn" href="/">← Back to Caro’s Pizzeria</a>
+  </div>
+  <p class="muted" style="margin-top:.6rem">
+    If you’re running late, come during the pickup window and we’ll do our best to fit you in.
+    Questions? Text or call <a href="tel:5052264632">505-226-4632</a>.
+  </p>
+</div>
+
 <script>
 const GAS_URL='https://script.google.com/macros/s/AKfycbz_dg9SuXT6n19We1l2lw5tuKiwolITeJ7N4ayei4qWHC2VG41ERO7nrZIMb2dqLhCT/exec';
 const sid=new URL(location.href).searchParams.get('session_id');
+
 (async()=>{
-  if(!sid){ document.getElementById('status').textContent='Missing session id.'; return; }
+  const S = document.getElementById('status');
+  const SUM = document.getElementById('summary');
+  if(!sid){ S.textContent='Missing session id.'; return; }
+
   try{
-    const r=await fetch(GAS_URL+'?route=confirm&session_id='+encodeURIComponent(sid));
-    const d=await r.json();
-    document.getElementById('status').textContent = d.ok ? 'You’re all set. See you at pickup!' : 'We’ll text you—something needs attention.';
-  }catch(_){ document.getElementById('status').textContent='Could not finalize automatically. We’ll sort it out.'; }
+    const r = await fetch(GAS_URL+'?route=confirm&session_id='+encodeURIComponent(sid));
+    const d = await r.json();
+    if (d && d.ok){
+      S.textContent = d.finalized ? 'You’re all set. See you at pickup!' : 'We’ll text you—something needs attention.';
+      if (d.date_iso || d.pickup_window || d.slot || d.qty || d.topping){
+        // Show summary
+        const isToday = (function(){
+          const t = new Date(), y=t.getFullYear(), m=String(t.getMonth()+1).padStart(2,'0'), dd=String(t.getDate()).padStart(2,'0');
+          return `${y}-${m}-${dd}` === d.date_iso;
+        })();
+        document.getElementById('date').textContent = isToday
+          ? 'Today'
+          : new Date(d.date_iso+'T00:00:00').toLocaleDateString([], {weekday:'short', month:'short', day:'numeric'});
+        document.getElementById('window').textContent = d.pickup_window || '—';
+        document.getElementById('slot').textContent = d.slot || '—';
+        const name = d.topping ? (d.topping === 'pepperoni' ? 'Beebop Style Pepperoni' : 'Gigi Style Cheese Pie') : '';
+        const line = (d.qty ? d.qty + ' × ' : '') + (name || 'Pizza');
+        document.getElementById('order').textContent = line || '—';
+        SUM.style.display = 'block';
+      }
+    } else {
+      S.textContent = 'We’ll text you—something needs attention.';
+    }
+  }catch(_){
+    S.textContent='Could not finalize automatically. We’ll sort it out.';
+  }
 })();
 </script>
