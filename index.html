@@ -46,6 +46,27 @@
     @media (max-width:640px){
       #drop{margin:0 .25rem 1rem}
     }
+
+    /* === Touch-friendly controls (mobile & desktop) === */
+    select,
+    #buyBtn.order-button {
+      font-size: 1.1rem;
+      min-height: 48px;        /* bigger tap target */
+      padding: 0.9rem 1rem;    /* larger touch padding */
+      border-radius: 10px;     /* slightly rounder */
+      -webkit-tap-highlight-color: rgba(0,0,0,0);
+      touch-action: manipulation;
+    }
+    #drop .row { gap: .75rem; }
+
+    /* Stack controls full-width on small screens */
+    @media (max-width: 640px){
+      #drop .row { flex-direction: column; align-items: stretch; }
+      #drop .row > select { width: 100%; }
+      #buyBtn.order-button { font-size: 1.15rem; }
+      #drop h2 { font-size: 1.5rem; }
+      #dropStatus { font-size: 1.1rem; }
+    }
   </style>
 </head>
 <body>
