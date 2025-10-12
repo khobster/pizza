@@ -82,7 +82,7 @@
           <span class="chip">🍕 Pie</span>
           <select id="topping" aria-label="Choose pie" title="Choose your pie">
             <option value="cheese">Gigi Style Cheese Pie</option>
-            <option value="pepperoni">Beebop Style Pepperoni Pie</option>
+            <option value="pepperoni">Beebop Style Pepperoni</option>
           </select>
         </div>
 
@@ -118,8 +118,8 @@
         <p>Great-great-great grandma’s Northern Italian method — the original South Carolina–style pizza pie.</p>
       </div>
       <div class="menu-item">
-        <strong>Beebop Style Pepperoni Pie</strong>
-        <p>Everything in the Cheese, plus pepperoni.</p>
+        <strong>Beebop Style Pepperoni</strong>
+        <p>Everything in the Cheese — plus pepperoni.</p>
       </div>
 
       <div class="contacts">
@@ -139,6 +139,7 @@
   <script>
     // Your published Apps Script URL:
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbz_dg9SuXT6n19We1l2lw5tuKiwolITeJ7N4ayei4qWHC2VG41ERO7nrZIMb2dqLhCT/exec';
+    let DROP_DATE_ISO = null;
 
     function parseTime12h_(s){
       const m = s.trim().match(/^(\d{1,2}):(\d{2})\s*([ap]m)$/i);
@@ -146,20 +147,35 @@
       let h = Number(m[1]) % 12; if (m[3].toLowerCase()==='pm') h += 12;
       const d = new Date(); d.setHours(h, Number(m[2]), 0, 0); return d;
     }
-    function populateSlotsFromWindow(winStr, stepMinutes=15){
+
+    // Build slots; if it's today's drop, hide slots whose END time is already in the past.
+    function populateSlotsFromWindow(winStr, stepMinutes=15, isToday=false){
       const sel = document.getElementById('slot');
       sel.innerHTML = '<option value="">Select time</option>';
       const parts = (winStr||'').split('-'); if (parts.length!==2) return;
       const start = parseTime12h_(parts[0]); const end = parseTime12h_(parts[1]); if(!start || !end) return;
+
+      const now = new Date();
+      let any = false;
       const d = new Date(start);
       while (d < end){
         const e = new Date(d.getTime() + stepMinutes*60000);
-        const label = d.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'}) + '–' +
-                      e.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
-        const opt = document.createElement('option'); opt.value = label; opt.textContent = label;
-        sel.appendChild(opt); d.setTime(e.getTime());
+        // Skip past slots only for today (end time <= now)
+        if (!(isToday && e <= now)) {
+          const label = d.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'}) + '–' +
+                        e.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
+          const opt = document.createElement('option'); opt.value = label; opt.textContent = label;
+          sel.appendChild(opt); any = true;
+        }
+        d.setTime(e.getTime());
+      }
+      if (!any){
+        const opt = document.createElement('option');
+        opt.value = ''; opt.textContent = 'No pickup times left';
+        sel.appendChild(opt);
       }
     }
+
     function todayIsoLocal(){
       const t=new Date(), y=t.getFullYear(), m=String(t.getMonth()+1).padStart(2,'0'), d=String(t.getDate()).padStart(2,'0');
       return `${y}-${m}-${d}`;
@@ -178,8 +194,7 @@
           B.disabled = true; B.textContent = 'UNAVAILABLE'; return;
         }
 
-        // Window & slots
-        populateSlotsFromWindow(d.pickup_window, 15);
+        DROP_DATE_ISO = d.date_iso || null;
 
         // Remaining (smart label)
         const isToday = d.date_iso === todayIsoLocal();
@@ -188,7 +203,21 @@
           : new Date(d.date_iso+'T00:00:00').toLocaleDateString([], {weekday:'short', month:'short', day:'numeric'});
         S.innerHTML = `<strong>${d.remaining}</strong> left ${isToday ? 'today' : 'for '+when} <span class="muted">(${d.pickup_window})</span>`;
 
-        if (d.soldOut){ B.disabled = true; B.textContent = 'SOLD OUT'; return; }
+        // Window & slots (filter past slots if today)
+        populateSlotsFromWindow(d.pickup_window, 15, isToday);
+
+        if (d.soldOut){
+          B.disabled = true; B.textContent = 'SOLD OUT';
+          return;
+        }
+
+        // If no future slots, disable purchase
+        const slotSel = document.getElementById('slot');
+        const hasChoice = Array.from(slotSel.options).some(o => o.value && o.value !== '');
+        if (!hasChoice){
+          B.disabled = true; B.textContent = 'NO TIMES LEFT';
+          return;
+        }
 
         // Cap qty by remaining
         const qtySel = document.getElementById('qty');
@@ -212,6 +241,11 @@
       const topping = document.getElementById('topping').value;
       const pickup_slot = document.getElementById('slot').value || '';
       if (!pickup_slot){ alert('Please choose a pickup time.'); return; }
+
+      // Save a local fallback so success.html can show it instantly
+      try {
+        localStorage.setItem('caros:last_order', JSON.stringify({ slot: pickup_slot, qty, topping }));
+      } catch(_) {}
 
       B.disabled = true; B.textContent = 'Redirecting…';
       try{
