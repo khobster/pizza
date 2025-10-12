@@ -21,7 +21,6 @@
     }
     .pill .when{ font-weight:800; font-size:1.1rem }
     .pill .slot{ font-weight:800; font-size:1.15rem }
-    .badge{ display:inline-block; padding:.25rem .5rem; border-radius:999px; background:#eef2ff; color:#3730a3; font-weight:700; font-size:.8rem }
 
     .kv{ display:flex; justify-content:space-between; gap:1rem; padding:.55rem 0; border-bottom:1px dashed #eee }
     .kv:last-child{ border-bottom:none }
@@ -75,6 +74,14 @@
       return iso === `${y}-${m}-${d}`;
     }
 
+    // Local fallback from the page before redirect
+    function readLocalFallback(){
+      try{ return JSON.parse(localStorage.getItem('caros:last_order')||'{}'); }catch(_){ return {}; }
+    }
+    function clearLocalFallback(){
+      try{ localStorage.removeItem('caros:last_order'); }catch(_){}
+    }
+
     (function(){
       const S = document.getElementById('status');
       const SUM = document.getElementById('summary');
@@ -82,7 +89,19 @@
       const whenLabel = document.getElementById('whenLabel');
       const slotLabel = document.getElementById('slotLabel');
 
-      if(!sid){ S.textContent='Missing session id.'; return; }
+      const local = readLocalFallback(); // {slot, qty, topping}
+
+      if(!sid){
+        // No session id; at least show local fallback
+        if (local.slot){
+          PILL.style.display='flex';
+          whenLabel.textContent = 'Today';  // best effort
+          slotLabel.textContent = local.slot;
+        }
+        S.textContent='Missing session id.';
+        clearLocalFallback();
+        return;
+      }
 
       fetch(GAS_URL+'?route=confirm&session_id='+encodeURIComponent(sid))
       .then(r=>r.json())
@@ -97,29 +116,47 @@
               ? (isToday ? 'Today' : new Date(d.date_iso+'T00:00:00').toLocaleDateString([], {weekday:'short', month:'short', day:'numeric'}))
               : '—';
 
+            const slotValue = d.slot || local.slot || ''; // server first, fallback to local
+
             // Big pill
-            whenLabel.textContent = dateHuman;
-            slotLabel.textContent = d.slot || d.pickup_window || '—';
-            PILL.style.display = 'flex';
+            if (dateHuman !== '—' || slotValue){
+              whenLabel.textContent = dateHuman || '—';
+              slotLabel.textContent = slotValue || d.pickup_window || '—';
+              PILL.style.display = 'flex';
+            }
 
             // Table details
             document.getElementById('date').textContent = dateHuman;
             document.getElementById('window').textContent = d.pickup_window || '—';
-            document.getElementById('slot').textContent = d.slot || '—';
+            document.getElementById('slot').textContent = slotValue || '—';
 
-            const name = d.topping ? (d.topping === 'pepperoni' ? 'Beebop Style Pepperoni' : 'Gigi Style Cheese Pie') : '';
-            const line = (d.qty ? d.qty + ' × ' : '') + (name || 'Pizza');
+            const nameFromServer = d.topping ? (d.topping === 'pepperoni' ? 'Beebop Style Pepperoni' : 'Gigi Style Cheese Pie') : '';
+            const name = nameFromServer || (local.topping === 'pepperoni' ? 'Beebop Style Pepperoni' : (local.topping ? 'Gigi Style Cheese Pie' : ''));
+            const qty  = d.qty || local.qty || '';
+            const line = (qty ? qty + ' × ' : '') + (name || 'Pizza');
             document.getElementById('order').textContent = line || '—';
 
             SUM.style.display = 'block';
           }
         } else {
+          // Show at least the local slot if we have it
+          if (local.slot){
+            whenLabel.textContent = 'Today';
+            slotLabel.textContent = local.slot;
+            PILL.style.display = 'flex';
+          }
           S.textContent = 'We’ll text you—something needs attention.';
         }
       })
       .catch(_=>{
+        if (local.slot){
+          whenLabel.textContent = 'Today';
+          slotLabel.textContent = local.slot;
+          PILL.style.display = 'flex';
+        }
         S.textContent='Could not finalize automatically. We’ll sort it out.';
-      });
+      })
+      .finally(clearLocalFallback);
     })();
   </script>
 </body>
