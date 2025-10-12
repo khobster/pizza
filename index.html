@@ -139,7 +139,9 @@
   <script>
     // Your published Apps Script URL:
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbz_dg9SuXT6n19We1l2lw5tuKiwolITeJ7N4ayei4qWHC2VG41ERO7nrZIMb2dqLhCT/exec';
-    let DROP_DATE_ISO = null;
+
+    // >>> Adjust this anytime (minutes you need before first pickup)
+    const LEAD_MINUTES = 45;
 
     function parseTime12h_(s){
       const m = s.trim().match(/^(\d{1,2}):(\d{2})\s*([ap]m)$/i);
@@ -148,27 +150,36 @@
       const d = new Date(); d.setHours(h, Number(m[2]), 0, 0); return d;
     }
 
-    // Build slots; if it's today's drop, hide slots whose END time is already in the past.
-    function populateSlotsFromWindow(winStr, stepMinutes=15, isToday=false){
+    // Build slots; if it's today's drop, hide slots whose START is before now + LEAD_MINUTES,
+    // and also hide any fully past slots.
+    function populateSlotsFromWindow(winStr, stepMinutes=15, isToday=false, leadMinutes=0){
       const sel = document.getElementById('slot');
       sel.innerHTML = '<option value="">Select time</option>';
       const parts = (winStr||'').split('-'); if (parts.length!==2) return;
       const start = parseTime12h_(parts[0]); const end = parseTime12h_(parts[1]); if(!start || !end) return;
 
       const now = new Date();
+      const cutoff = new Date(now.getTime() + leadMinutes*60000); // earliest allowed START
       let any = false;
+
       const d = new Date(start);
       while (d < end){
         const e = new Date(d.getTime() + stepMinutes*60000);
-        // Skip past slots only for today (end time <= now)
-        if (!(isToday && e <= now)) {
+
+        // Skip if the whole slot is already past OR the start is before cutoff (today only)
+        const pastCompletely = e <= now;
+        const tooSoon = isToday && d < cutoff;
+
+        if (!(pastCompletely || tooSoon)) {
           const label = d.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'}) + '–' +
                         e.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
           const opt = document.createElement('option'); opt.value = label; opt.textContent = label;
           sel.appendChild(opt); any = true;
         }
+
         d.setTime(e.getTime());
       }
+
       if (!any){
         const opt = document.createElement('option');
         opt.value = ''; opt.textContent = 'No pickup times left';
@@ -194,8 +205,6 @@
           B.disabled = true; B.textContent = 'UNAVAILABLE'; return;
         }
 
-        DROP_DATE_ISO = d.date_iso || null;
-
         // Remaining (smart label)
         const isToday = d.date_iso === todayIsoLocal();
         const when = isToday
@@ -203,8 +212,8 @@
           : new Date(d.date_iso+'T00:00:00').toLocaleDateString([], {weekday:'short', month:'short', day:'numeric'});
         S.innerHTML = `<strong>${d.remaining}</strong> left ${isToday ? 'today' : 'for '+when} <span class="muted">(${d.pickup_window})</span>`;
 
-        // Window & slots (filter past slots if today)
-        populateSlotsFromWindow(d.pickup_window, 15, isToday);
+        // Window & slots (apply lead time if today)
+        populateSlotsFromWindow(d.pickup_window, 15, isToday, LEAD_MINUTES);
 
         if (d.soldOut){
           B.disabled = true; B.textContent = 'SOLD OUT';
