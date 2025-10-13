@@ -91,18 +91,20 @@
 
       const local = readLocalFallback(); // {slot, qty, topping}
 
+      // Show the chosen slot immediately (nice UX)
+      if (local.slot){
+        whenLabel.textContent = 'Pickup time';
+        slotLabel.textContent = local.slot;
+        PILL.style.display = 'flex';
+      }
+
       if(!sid){
-        // No session id; at least show local fallback
-        if (local.slot){
-          PILL.style.display='flex';
-          whenLabel.textContent = 'Today';  // best effort
-          slotLabel.textContent = local.slot;
-        }
         S.textContent='Missing session id.';
         clearLocalFallback();
         return;
       }
 
+      // Replace with server-confirmed details (now includes slot)
       fetch(GAS_URL+'?route=confirm&session_id='+encodeURIComponent(sid))
       .then(r=>r.json())
       .then(d=>{
@@ -114,21 +116,21 @@
             const isToday = d.date_iso ? isTodayISO(d.date_iso) : false;
             const dateHuman = d.date_iso
               ? (isToday ? 'Today' : new Date(d.date_iso+'T00:00:00').toLocaleDateString([], {weekday:'short', month:'short', day:'numeric'}))
-              : '—';
+              : (local.slot ? 'Pickup time' : '—');
 
-            const slotValue = d.slot || local.slot || ''; // server first, fallback to local
+            const slotValue = d.slot || local.slot || '';
 
             // Big pill
-            if (dateHuman !== '—' || slotValue){
-              whenLabel.textContent = dateHuman || '—';
+            if (slotValue || dateHuman !== '—'){
+              whenLabel.textContent = dateHuman || 'Pickup time';
               slotLabel.textContent = slotValue || d.pickup_window || '—';
               PILL.style.display = 'flex';
             }
 
             // Table details
-            document.getElementById('date').textContent = dateHuman;
+            document.getElementById('date').textContent   = dateHuman || '—';
             document.getElementById('window').textContent = d.pickup_window || '—';
-            document.getElementById('slot').textContent = slotValue || '—';
+            document.getElementById('slot').textContent   = slotValue || '—';
 
             const nameFromServer = d.topping ? (d.topping === 'pepperoni' ? 'Beebop Style Pepperoni' : 'Gigi Style Cheese Pie') : '';
             const name = nameFromServer || (local.topping === 'pepperoni' ? 'Beebop Style Pepperoni' : (local.topping ? 'Gigi Style Cheese Pie' : ''));
@@ -139,21 +141,10 @@
             SUM.style.display = 'block';
           }
         } else {
-          // Show at least the local slot if we have it
-          if (local.slot){
-            whenLabel.textContent = 'Today';
-            slotLabel.textContent = local.slot;
-            PILL.style.display = 'flex';
-          }
           S.textContent = 'We’ll text you—something needs attention.';
         }
       })
       .catch(_=>{
-        if (local.slot){
-          whenLabel.textContent = 'Today';
-          slotLabel.textContent = local.slot;
-          PILL.style.display = 'flex';
-        }
         S.textContent='Could not finalize automatically. We’ll sort it out.';
       })
       .finally(clearLocalFallback);
