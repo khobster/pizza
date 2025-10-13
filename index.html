@@ -149,21 +149,26 @@
       let h = Number(m[1]) % 12; if (m[3].toLowerCase()==='pm') h += 12;
       const d = new Date(); d.setHours(h, Number(m[2]), 0, 0); return d;
     }
+    function parseWindow(winStr){
+      const parts = (winStr||'').split('-'); if (parts.length!==2) return null;
+      const start = parseTime12h_(parts[0]); const end = parseTime12h_(parts[1]);
+      if(!start || !end) return null;
+      return {start, end};
+    }
 
     // Build slots; if it's today's drop, hide slots whose START is before now + LEAD_MINUTES,
     // and also hide any fully past slots.
     function populateSlotsFromWindow(winStr, stepMinutes=15, isToday=false, leadMinutes=0){
       const sel = document.getElementById('slot');
       sel.innerHTML = '<option value="">Select time</option>';
-      const parts = (winStr||'').split('-'); if (parts.length!==2) return;
-      const start = parseTime12h_(parts[0]); const end = parseTime12h_(parts[1]); if(!start || !end) return;
+      const W = parseWindow(winStr); if(!W) return;
 
       const now = new Date();
       const cutoff = new Date(now.getTime() + leadMinutes*60000); // earliest allowed START
       let any = false;
 
-      const d = new Date(start);
-      while (d < end){
+      const d = new Date(W.start);
+      while (d < W.end){
         const e = new Date(d.getTime() + stepMinutes*60000);
 
         // Skip if the whole slot is already past OR the start is before cutoff (today only)
@@ -205,11 +210,25 @@
           B.disabled = true; B.textContent = 'UNAVAILABLE'; return;
         }
 
-        // Remaining (smart label)
         const isToday = d.date_iso === todayIsoLocal();
         const when = isToday
           ? 'today'
           : new Date(d.date_iso+'T00:00:00').toLocaleDateString([], {weekday:'short', month:'short', day:'numeric'});
+
+        // If we’re past "last-call" (window end - lead), close ordering cleanly
+        const W = parseWindow(d.pickup_window);
+        const now = new Date();
+        if (isToday && W){
+          const lastCall = new Date(W.end.getTime() - LEAD_MINUTES*60000);
+          if (now >= lastCall){
+            S.innerHTML = `Ordering closed for <strong>today</strong> <span class="muted">(${d.pickup_window})</span>`;
+            B.disabled = true; B.textContent = 'ORDERING CLOSED';
+            document.getElementById('slot').innerHTML = '<option value="">No pickup times left</option>';
+            return;
+          }
+        }
+
+        // Normal status
         S.innerHTML = `<strong>${d.remaining}</strong> left ${isToday ? 'today' : 'for '+when} <span class="muted">(${d.pickup_window})</span>`;
 
         // Window & slots (apply lead time if today)
@@ -250,6 +269,17 @@
       const topping = document.getElementById('topping').value;
       const pickup_slot = document.getElementById('slot').value || '';
       if (!pickup_slot){ alert('Please choose a pickup time.'); return; }
+
+      // Re-validate lead time just before redirect (in case time passed)
+      const parts = pickup_slot.includes('–') ? pickup_slot.split('–') : pickup_slot.split('-');
+      const slotStart = parts[0] ? parseTime12h_(parts[0]) : null;
+      const now = new Date();
+      const cutoff = new Date(now.getTime() + LEAD_MINUTES*60000);
+      if (slotStart && slotStart < cutoff){
+        alert('That time is too soon. Please pick a later slot.');
+        await loadDropStatus();
+        return;
+      }
 
       // Save a local fallback so success.html can show it instantly
       try {
